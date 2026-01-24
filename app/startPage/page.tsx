@@ -4,17 +4,22 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SignInButton, useAuth, useUser } from "@clerk/nextjs";
 
-export default function Home() {
+export default function StartPage() {
   const { push } = useRouter();
   const { isSignedIn, isLoaded } = useUser();
   const { user: clerkUser } = useUser();
   useEffect(() => {
     if (!isLoaded) return;
 
-    if (isSignedIn === false) {
-      push("/startPage");
+    if (isSignedIn === true) {
+      push("/");
     }
   }, [isLoaded, isSignedIn, push]);
 
-  return <div>hello main page</div>;
+  return (
+    <div>
+      <Button onClick={() => push("/signUp")}>SIGN UP</Button>
+      <SignInButton />
+    </div>
+  );
 }
