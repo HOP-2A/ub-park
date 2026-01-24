@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(nanoid())
+  name      String
+  clerkId   String   @unique
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  bookings Booking[]
+}
+
+model Owner {
+  id        String   @id @default(nanoid())
+  name      String
+  clerkId   String   @unique
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  places Place[]
+}
+
+model Admin {
+  id        String   @id @default(nanoid())
+  name      String
+  clerkId   String   @unique
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Place {
+  id        String @id @default(nanoid())
+  name      String
+  address   String
+  city      String
+  latitude  Float
+  longitude Float
+
+  ownerId  String
+  owner    Owner         @relation(fields: [ownerId], references: [id])
+  parkings ParkingSpot[]
+}
+
+model ParkingSpot {
+  id           String  @id @default(nanoid())
+  number       String
+  pricePerHour Float
+  isAvailable  Boolean @default(true)
+
+  parkingLotId String
+  parkingLot   Place  @relation(fields: [parkingLotId], references: [id])
+
+  bookings Booking[]
+}
+
+model Booking {
+  id            String @id @default(nanoid())
+  userId        String
+  parkingSpotId String
+
+  startTime  DateTime
+  endTime    DateTime
+  totalPrice Float
+  status     BookingStatus @default(PENDING)
+
+  user        User        @relation(fields: [userId], references: [id])
+  parkingSpot ParkingSpot @relation(fields: [parkingSpotId], references: [id])
+
+  payment   Payment?
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id        String        @id @default(nanoid())
+  bookingId String        @unique
+  amount    Float
+  method    PaymentMethod
+  status    PaymentStatus
+  paidAt    DateTime?
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentMethod {
+  CARD
+  CASH
+  QPAY
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
