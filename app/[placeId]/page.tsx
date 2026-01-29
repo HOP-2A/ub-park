@@ -19,7 +19,7 @@ type placetype = {
 };
 
 export default function Home() {
-  const router = useRouter();
+    const { push } = useRouter();
   const [places, setPlaces] = useState<placetype>();
   const params = useParams();
   const place = params.placeId as string;
@@ -57,7 +57,7 @@ export default function Home() {
         </div>
       </div>
 
-      <Button>START BOOKING</Button>
+      <Button onClick={() => push(`/booking/${place}`)}>START BOOKING</Button>
     </div>
   );
 }
