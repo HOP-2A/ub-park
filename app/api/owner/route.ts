@@ -5,21 +5,10 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const {
-      name,
-      address,
-      city,
-      latitude,
-      longitude,
-      ownerId,
-      spots,
-    } = body;
+    const { name, address, city, latitude, longitude, ownerId, spots } = body;
 
     if (!name || !address || !city || !ownerId || !Array.isArray(spots)) {
-      return NextResponse.json(
-        { message: "Invalid payload" },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: "Invalid payload" }, { status: 400 });
     }
 
     // 1️⃣ Create Place
@@ -47,13 +36,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { message: "Parking lot created", placeId: place.id },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { message: "Server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

@@ -37,7 +37,7 @@ export default function Home() {
     if (clerkUser?.publicMetadata.role === "OWNER") {
       router.push("/owner/dashbord");
     }
-  }, [isLoaded, isSignedIn, router.push]);
+  }, [clerkUser?.publicMetadata.role, isLoaded, isSignedIn, router, router.push]);
 
   useEffect(() => {
     const getplaces = async () => {

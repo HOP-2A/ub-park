@@ -10,10 +10,18 @@ import {
   ChevronRight,
   MapPin,
 } from "lucide-react";
+import { UserButton } from "@clerk/nextjs";
 
 export default function ParkingDashboard() {
   const [view, setView] = useState("days");
   const [selectedDate, setSelectedDate] = useState(29);
+
+  const FetchParkingSpot = async () => {
+    const res = await fetch(`api/place/${placeId}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+  };
 
   const dates = [
     { day: "Thu", date: 29, month: "Jan" },
@@ -107,9 +115,7 @@ export default function ParkingDashboard() {
           </div>
 
           <div className="flex items-center gap-3 p-3 mt-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-              BB
-            </div>
+            <UserButton></UserButton>
             <span className="text-sm font-medium text-gray-700">
               blobsuki102
             </span>
