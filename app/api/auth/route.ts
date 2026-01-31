@@ -4,8 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
   try {
-    const body = await req.json();
-    const { email, password, username, type } = body;
+    const { email, password, username, type } = await req.json();
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -26,8 +25,8 @@ export const POST = async (req: NextRequest) => {
       publicMetadata: {
         role: type,
       },
-      skipPasswordChecks: true,
-      skipPasswordRequirement: true,
+      skipPasswordChecks:true,
+      skipPasswordRequirement:true
     });
 
     const user = await prisma.user.create({

@@ -27,13 +27,17 @@ export default function Home() {
   const { isSignedIn, isLoaded } = useUser();
   const [places, setPlaces] = useState<placetype[]>([]);
   const { user: clerkUser } = useUser();
+
   useEffect(() => {
     if (!isLoaded) return;
 
     if (isSignedIn === false) {
       router.push("/startPage");
     }
-  }, [isLoaded, isSignedIn, router.push]);
+    if (clerkUser?.publicMetadata.role === "OWNER") {
+      router.push("/owner/dashbord");
+    }
+  }, [clerkUser?.publicMetadata.role, isLoaded, isSignedIn, router, router.push]);
 
   useEffect(() => {
     const getplaces = async () => {
@@ -43,6 +47,13 @@ export default function Home() {
     };
     getplaces();
   }, []);
+
+  // const IsOwner = () => {
+  //   if (clerkUser?.publicMetadata.role === "OWNER") {
+  //     router.push("/owner");
+  //   }
+  // };
+
   return (
     <div>
       <div className="flex items-center justify-end px-4 py-3 sm:px-6">
