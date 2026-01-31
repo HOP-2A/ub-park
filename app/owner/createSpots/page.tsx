@@ -1,16 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MapPin,
   DollarSign,
   Navigation,
   Building2,
-  Map,
+  Map as MapIcon,
   Sparkles,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { useAuth } from "@/provider/authProvider";
+
+// ✅ Leaflet + react-leaflet
+import "leaflet/dist/leaflet.css";
+import * as L from "leaflet";
+import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
+
+// ✅ Fix default marker icon paths in Next.js
+const DefaultIcon = L.icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 export type User = {
   id: string;
@@ -19,10 +35,22 @@ export type User = {
   email: string;
 };
 
+type LatLng = { lat: number; lng: number };
+
+function ClickToPick({ onPick }: { onPick: (pos: LatLng) => void }) {
+  useMapEvents({
+    click(e) {
+      onPick({ lat: e.latlng.lat, lng: e.latlng.lng });
+    },
+  });
+  return null;
+}
+
 export default function AddParkingLot() {
   const [focusedField, setFocusedField] = useState("");
   const { user: clerkUser } = useUser();
   const { user } = useAuth(clerkUser?.id);
+
   const [form, setForm] = useState({
     name: "",
     address: "",
@@ -33,14 +61,69 @@ export default function AddParkingLot() {
     pricePerHour: 5,
   });
 
+  // ✅ Map state (default: Ulaanbaatar-ish center; change if you want)
+  const defaultCenter = useMemo<LatLng>(
+    () => ({ lat: 47.9185, lng: 106.917 }),
+    []
+  );
+  const [picked, setPicked] = useState<LatLng | null>(null);
+
+  // keep map instance (optional)
+  const mapRef = useRef<L.Map | null>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, type } = e.target;
+
+    if (
+      type === "number" &&
+      (name === "spotCount" || name === "pricePerHour")
+    ) {
+      setForm((prev) => ({
+        ...prev,
+        [name]: value === "" ? "" : Number(value),
+      }));
+      return;
+    }
+
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const setLatLng = (lat: number, lng: number) => {
+    const latStr = String(lat);
+    const lngStr = String(lng);
+    setForm((prev) => ({
+      ...prev,
+      latitude: latStr,
+      longitude: lngStr,
+    }));
+  };
+
+  const handlePickOnMap = (pos: LatLng) => {
+    setPicked(pos);
+    // nice rounding for input display (still accurate enough for parking lots)
+    const lat = Number(pos.lat.toFixed(6));
+    const lng = Number(pos.lng.toFixed(6));
+    setLatLng(lat, lng);
+  };
+
+  // If user manually types lat/lng, update marker
+  useEffect(() => {
+    const lat = Number(form.latitude);
+    const lng = Number(form.longitude);
+    if (
+      Number.isFinite(lat) &&
+      Number.isFinite(lng) &&
+      form.latitude !== "" &&
+      form.longitude !== ""
+    ) {
+      setPicked({ lat, lng });
+    }
+  }, [form.latitude, form.longitude]);
+
   const generateSpots = () => {
-    return Array.from({ length: Number(form.spotCount) }, (_, i) => ({
+    return Array.from({ length: Number(form.spotCount) || 0 }, (_, i) => ({
       number: `${i + 1}`,
-      pricePerHour: Number(form.pricePerHour),
+      pricePerHour: Number(form.pricePerHour) || 0,
     }));
   };
 
@@ -71,258 +154,392 @@ export default function AddParkingLot() {
     alert("Parking lot created 🚗");
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        ></div>
-        <div
-          className="absolute top-1/2 left-1/2 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "2s" }}
-        ></div>
-      </div>
+  // ✅ UI classes
+  const labelClass = "block text-sm font-medium text-slate-700 mb-2 ml-1";
+  const inputBase =
+    "w-full px-4 py-4 bg-white border border-blue-200 rounded-xl " +
+    "text-slate-900 placeholder-slate-400 " +
+    "focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none " +
+    "transition-all duration-300";
+  const inputWithIcon =
+    "w-full pl-12 pr-4 py-4 bg-white border border-blue-200 rounded-xl " +
+    "text-slate-900 placeholder-slate-400 " +
+    "focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none " +
+    "transition-all duration-300";
 
-      <div className="relative w-full max-w-4xl">
+  // ✅ Preview computed values
+  const preview = useMemo(() => {
+    const lat = Number(form.latitude);
+    const lng = Number(form.longitude);
+    const okLatLng =
+      form.latitude !== "" &&
+      form.longitude !== "" &&
+      Number.isFinite(lat) &&
+      Number.isFinite(lng);
+
+    return {
+      name: form.name || "—",
+      city: form.city || "—",
+      address: form.address || "—",
+      lat: okLatLng ? lat : null,
+      lng: okLatLng ? lng : null,
+      spotCount: Number(form.spotCount) || 0,
+      pricePerHour: Number(form.pricePerHour) || 0,
+      totalIfFullPerHour:
+        (Number(form.spotCount) || 0) * (Number(form.pricePerHour) || 0),
+      okLatLng,
+    };
+  }, [form]);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-50 flex items-center justify-center p-6">
+      <div className="relative w-full max-w-6xl">
         {/* Header */}
-        <div className="text-center mb-12 animate-[fadeIn_0.6s_ease-out]">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl mb-6 shadow-2xl shadow-purple-500/50 animate-[float_3s_ease-in-out_infinite]">
+        <div className="text-center mb-10 animate-[fadeIn_0.6s_ease-out]">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-sky-500 rounded-2xl mb-6 shadow-xl shadow-blue-200 animate-[float_3s_ease-in-out_infinite]">
             <Building2 className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-5xl font-bold text-white mb-3 tracking-tight">
+
+          <h1 className="text-5xl font-bold text-slate-900 mb-3 tracking-tight">
             Create Parking Lot
           </h1>
-          <p className="text-purple-200 text-lg">
-            Add a new location to your parking network
+          <p className="text-slate-500 text-lg">
+            Click on the map to auto-fill latitude & longitude
           </p>
         </div>
 
-        {/* Form Card */}
-        <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 animate-[slideUp_0.8s_ease-out]">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Location Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-purple-300 mb-4">
-                <MapPin className="w-5 h-5" />
-                <span className="text-sm font-semibold uppercase tracking-wider">
-                  Location Details
-                </span>
-              </div>
+        {/* Layout: form + preview */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Form */}
+          <div className="lg:col-span-2 relative bg-white rounded-3xl p-8 shadow-xl border border-blue-100 animate-[slideUp_0.8s_ease-out]">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Location */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-blue-600 mb-4">
+                  <MapPin className="w-5 h-5" />
+                  <span className="text-sm font-semibold uppercase tracking-wider">
+                    Location Details
+                  </span>
+                </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                {/* Name Input */}
-                <div className="relative group">
-                  <label className="block text-sm font-medium text-purple-200 mb-2 ml-1">
-                    Parking Lot Name
-                  </label>
-                  <div className="relative">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="relative group">
+                    <label className={labelClass}>Parking Lot Name *</label>
                     <input
                       name="name"
                       type="text"
                       placeholder="Downtown Plaza"
+                      value={form.name}
                       onChange={handleChange}
                       onFocus={() => setFocusedField("name")}
                       onBlur={() => setFocusedField("")}
                       required
-                      className="w-full px-4 py-4 bg-white/5 border-2 border-purple-500/30 rounded-xl text-white placeholder-purple-300/50 focus:border-purple-400 focus:bg-white/10 focus:outline-none transition-all duration-300 hover:border-purple-400/50"
+                      className={inputBase}
                     />
-                    <div
-                      className={`absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 -z-10 blur-xl transition-opacity duration-300 ${focusedField === "name" ? "opacity-100" : "opacity-0"}`}
-                    ></div>
                   </div>
-                </div>
 
-                {/* City Input */}
-                <div className="relative group">
-                  <label className="block text-sm font-medium text-purple-200 mb-2 ml-1">
-                    City
-                  </label>
-                  <div className="relative">
+                  <div className="relative group">
+                    <label className={labelClass}>City *</label>
                     <input
                       name="city"
                       type="text"
-                      placeholder="San Francisco"
+                      placeholder="Ulaanbaatar"
+                      value={form.city}
                       onChange={handleChange}
                       onFocus={() => setFocusedField("city")}
                       onBlur={() => setFocusedField("")}
                       required
-                      className="w-full px-4 py-4 bg-white/5 border-2 border-purple-500/30 rounded-xl text-white placeholder-purple-300/50 focus:border-purple-400 focus:bg-white/10 focus:outline-none transition-all duration-300 hover:border-purple-400/50"
+                      className={inputBase}
                     />
-                    <div
-                      className={`absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 -z-10 blur-xl transition-opacity duration-300 ${focusedField === "city" ? "opacity-100" : "opacity-0"}`}
-                    ></div>
                   </div>
                 </div>
-              </div>
 
-              {/* Address Input - Full Width */}
-              <div className="relative group">
-                <label className="block text-sm font-medium text-purple-200 mb-2 ml-1">
-                  Street Address
-                </label>
-                <div className="relative">
+                <div className="relative group">
+                  <label className={labelClass}>Street Address *</label>
                   <input
                     name="address"
                     type="text"
                     placeholder="123 Main Street, Suite 100"
+                    value={form.address}
                     onChange={handleChange}
                     onFocus={() => setFocusedField("address")}
                     onBlur={() => setFocusedField("")}
                     required
-                    className="w-full px-4 py-4 bg-white/5 border-2 border-purple-500/30 rounded-xl text-white placeholder-purple-300/50 focus:border-purple-400 focus:bg-white/10 focus:outline-none transition-all duration-300 hover:border-purple-400/50"
+                    className={inputBase}
                   />
-                  <div
-                    className={`absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 -z-10 blur-xl transition-opacity duration-300 ${focusedField === "address" ? "opacity-100" : "opacity-0"}`}
-                  ></div>
                 </div>
               </div>
-            </div>
 
-            {/* Coordinates Section */}
-            <div className="space-y-4 pt-4">
-              <div className="flex items-center gap-2 text-blue-300 mb-4">
-                <Navigation className="w-5 h-5" />
-                <span className="text-sm font-semibold uppercase tracking-wider">
-                  GPS Coordinates
-                </span>
-              </div>
+              {/* Map Picker */}
+              <div className="space-y-4 pt-4">
+                <div className="flex items-center gap-2 text-blue-600 mb-2">
+                  <MapIcon className="w-5 h-5" />
+                  <span className="text-sm font-semibold uppercase tracking-wider">
+                    Map Picker
+                  </span>
+                </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                {/* Latitude */}
-                <div className="relative group">
-                  <label className="block text-sm font-medium text-purple-200 mb-2 ml-1">
-                    Latitude
-                  </label>
-                  <div className="relative">
-                    <Map className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400/50" />
-                    <input
-                      name="latitude"
-                      type="number"
-                      step="any"
-                      placeholder="37.7749"
-                      onChange={handleChange}
-                      onFocus={() => setFocusedField("latitude")}
-                      onBlur={() => setFocusedField("")}
-                      required
-                      className="w-full pl-12 pr-4 py-4 bg-white/5 border-2 border-purple-500/30 rounded-xl text-white placeholder-purple-300/50 focus:border-purple-400 focus:bg-white/10 focus:outline-none transition-all duration-300 hover:border-purple-400/50"
-                    />
-                    <div
-                      className={`absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/20 to-cyan-500/20 -z-10 blur-xl transition-opacity duration-300 ${focusedField === "latitude" ? "opacity-100" : "opacity-0"}`}
-                    ></div>
+                <div className="rounded-2xl overflow-hidden border border-blue-100 shadow-sm">
+                  <div className="bg-blue-50 px-4 py-3 text-sm text-slate-600 flex items-center justify-between gap-3">
+                    <span>
+                      Tip: click anywhere on the map → lat/lng auto fills
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPicked(null);
+                        setForm((p) => ({ ...p, latitude: "", longitude: "" }));
+                      }}
+                      className="text-blue-700 hover:text-blue-800 font-semibold"
+                    >
+                      Clear pin
+                    </button>
                   </div>
-                </div>
 
-                {/* Longitude */}
-                <div className="relative group">
-                  <label className="block text-sm font-medium text-purple-200 mb-2 ml-1">
-                    Longitude
-                  </label>
-                  <div className="relative">
-                    <Map className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400/50" />
-                    <input
-                      name="longitude"
-                      type="number"
-                      step="any"
-                      placeholder="-122.4194"
-                      onChange={handleChange}
-                      onFocus={() => setFocusedField("longitude")}
-                      onBlur={() => setFocusedField("")}
-                      required
-                      className="w-full pl-12 pr-4 py-4 bg-white/5 border-2 border-purple-500/30 rounded-xl text-white placeholder-purple-300/50 focus:border-purple-400 focus:bg-white/10 focus:outline-none transition-all duration-300 hover:border-purple-400/50"
-                    />
-                    <div
-                      className={`absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/20 to-cyan-500/20 -z-10 blur-xl transition-opacity duration-300 ${focusedField === "longitude" ? "opacity-100" : "opacity-0"}`}
-                    ></div>
+                  <div className="h-[320px]">
+                    <MapContainer
+                      center={picked ?? defaultCenter}
+                      zoom={13}
+                      scrollWheelZoom
+                      className="h-full w-full"
+                      whenReady={(e) => {
+                        mapRef.current = e.target;
+                      }}
+                    >
+                      <TileLayer
+                        attribution="&copy; OpenStreetMap contributors"
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+
+                      <ClickToPick onPick={handlePickOnMap} />
+
+                      {picked && <Marker position={[picked.lat, picked.lng]} />}
+                    </MapContainer>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Capacity & Pricing Section */}
-            <div className="space-y-4 pt-4">
-              <div className="flex items-center gap-2 text-emerald-300 mb-4">
-                <Sparkles className="w-5 h-5" />
-                <span className="text-sm font-semibold uppercase tracking-wider">
-                  Capacity & Pricing
-                </span>
+              {/* GPS */}
+              <div className="space-y-4 pt-2">
+                <div className="flex items-center gap-2 text-blue-600 mb-4">
+                  <Navigation className="w-5 h-5" />
+                  <span className="text-sm font-semibold uppercase tracking-wider">
+                    GPS Coordinates
+                  </span>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="relative group">
+                    <label className={labelClass}>Latitude *</label>
+                    <div className="relative">
+                      <MapIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400" />
+                      <input
+                        name="latitude"
+                        type="number"
+                        step="any"
+                        placeholder="47.9185"
+                        value={form.latitude}
+                        onChange={handleChange}
+                        onFocus={() => setFocusedField("latitude")}
+                        onBlur={() => setFocusedField("")}
+                        required
+                        className={inputWithIcon}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="relative group">
+                    <label className={labelClass}>Longitude *</label>
+                    <div className="relative">
+                      <MapIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400" />
+                      <input
+                        name="longitude"
+                        type="number"
+                        step="any"
+                        placeholder="106.9170"
+                        value={form.longitude}
+                        onChange={handleChange}
+                        onFocus={() => setFocusedField("longitude")}
+                        onBlur={() => setFocusedField("")}
+                        required
+                        className={inputWithIcon}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                {/* Spot Count */}
-                <div className="relative group">
-                  <label className="block text-sm font-medium text-purple-200 mb-2 ml-1">
-                    Number of Spots
-                  </label>
-                  <div className="relative">
+              {/* Capacity & Pricing */}
+              <div className="space-y-4 pt-4">
+                <div className="flex items-center gap-2 text-blue-600 mb-4">
+                  <Sparkles className="w-5 h-5" />
+                  <span className="text-sm font-semibold uppercase tracking-wider">
+                    Capacity & Pricing
+                  </span>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="relative group">
+                    <label className={labelClass}>Number of Spots</label>
                     <input
                       name="spotCount"
                       type="number"
                       min="1"
                       placeholder="50"
+                      value={String(form.spotCount)}
                       onChange={handleChange}
                       onFocus={() => setFocusedField("spotCount")}
                       onBlur={() => setFocusedField("")}
-                      className="w-full px-4 py-4 bg-white/5 border-2 border-purple-500/30 rounded-xl text-white placeholder-purple-300/50 focus:border-purple-400 focus:bg-white/10 focus:outline-none transition-all duration-300 hover:border-purple-400/50"
+                      className={inputBase}
                     />
-                    <div
-                      className={`absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500/20 to-green-500/20 -z-10 blur-xl transition-opacity duration-300 ${focusedField === "spotCount" ? "opacity-100" : "opacity-0"}`}
-                    ></div>
                   </div>
-                </div>
 
-                {/* Price Per Hour */}
-                <div className="relative group">
-                  <label className="block text-sm font-medium text-purple-200 mb-2 ml-1">
-                    Price Per Hour
-                  </label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400/50" />
-                    <input
-                      name="pricePerHour"
-                      type="number"
-                      min="0"
-                      step="0.5"
-                      placeholder="5.00"
-                      onChange={handleChange}
-                      onFocus={() => setFocusedField("pricePerHour")}
-                      onBlur={() => setFocusedField("")}
-                      className="w-full pl-12 pr-4 py-4 bg-white/5 border-2 border-purple-500/30 rounded-xl text-white placeholder-purple-300/50 focus:border-purple-400 focus:bg-white/10 focus:outline-none transition-all duration-300 hover:border-purple-400/50"
-                    />
-                    <div
-                      className={`absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500/20 to-green-500/20 -z-10 blur-xl transition-opacity duration-300 ${focusedField === "pricePerHour" ? "opacity-100" : "opacity-0"}`}
-                    ></div>
+                  <div className="relative group">
+                    <label className={labelClass}>Price Per Hour</label>
+                    <div className="relative">
+                      <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400" />
+                      <input
+                        name="pricePerHour"
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        placeholder="5.00"
+                        value={String(form.pricePerHour)}
+                        onChange={handleChange}
+                        onFocus={() => setFocusedField("pricePerHour")}
+                        onBlur={() => setFocusedField("")}
+                        className={inputWithIcon}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Submit */}
+              <div className="pt-6">
+                <button
+                  type="submit"
+                  className="relative w-full group overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600 rounded-2xl transition-all duration-500 group-hover:scale-105"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-sky-300 to-blue-400 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500"></div>
+
+                  <div className="relative px-8 py-5 flex items-center justify-center gap-3 text-white font-bold text-lg">
+                    <Building2 className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+                    <span>Create Parking Lot</span>
+                    <Sparkles className="w-5 h-5 group-hover:scale-125 transition-transform duration-300" />
+                  </div>
+                </button>
+              </div>
+            </form>
+
+            {/* subtle corner accents */}
+            <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-transparent rounded-tl-3xl pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-sky-100 to-transparent rounded-br-3xl pointer-events-none" />
+          </div>
+
+          {/* Preview Card */}
+          <div className="relative bg-white rounded-3xl p-6 shadow-xl border border-blue-100 animate-[slideUp_0.9s_ease-out] h-fit">
+            <div className="flex items-center gap-2 text-blue-600 mb-4">
+              <Sparkles className="w-5 h-5" />
+              <span className="text-sm font-semibold uppercase tracking-wider">
+                Preview
+              </span>
             </div>
 
-            {/* Submit Button */}
-            <div className="pt-6">
-              <button
-                type="submit"
-                className="relative w-full group overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-2xl transition-all duration-500 group-hover:scale-105"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500"></div>
-                <div className="relative px-8 py-5 flex items-center justify-center gap-3 text-white font-bold text-lg">
-                  <Building2 className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
-                  <span>Create Parking Lot</span>
-                  <Sparkles className="w-5 h-5 group-hover:scale-125 transition-transform duration-300" />
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4">
+                <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
+                  Parking Lot
                 </div>
-              </button>
-            </div>
-          </form>
+                <div className="mt-2 text-lg font-bold text-slate-900">
+                  {preview.name}
+                </div>
+                <div className="mt-1 text-sm text-slate-600">
+                  {preview.address}
+                </div>
+                <div className="mt-1 text-sm text-slate-600">
+                  {preview.city}
+                </div>
+              </div>
 
-          {/* Decorative corner elements */}
-          <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-transparent rounded-tl-3xl pointer-events-none"></div>
-          <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-pink-500/20 to-transparent rounded-br-3xl pointer-events-none"></div>
+              <div className="rounded-2xl border border-blue-100 p-4">
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Coordinates
+                </div>
+                <div className="mt-2 text-sm text-slate-700">
+                  {preview.okLatLng ? (
+                    <>
+                      <div>
+                        <span className="font-semibold">Lat:</span>{" "}
+                        {preview.lat}
+                      </div>
+                      <div>
+                        <span className="font-semibold">Lng:</span>{" "}
+                        {preview.lng}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-slate-500">
+                      Click the map or fill lat/lng
+                    </div>
+                  )}
+                </div>
+
+                {picked && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      mapRef.current?.setView([picked.lat, picked.lng], 16, {
+                        animate: true,
+                      });
+                    }}
+                    className="mt-3 inline-flex items-center gap-2 text-blue-700 hover:text-blue-800 font-semibold text-sm"
+                  >
+                    <Navigation className="w-4 h-4" />
+                    Zoom to pin
+                  </button>
+                )}
+              </div>
+
+              <div className="rounded-2xl border border-blue-100 p-4">
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Capacity & Pricing
+                </div>
+
+                <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
+                  <div className="rounded-xl bg-slate-50 border border-slate-100 p-3">
+                    <div className="text-xs text-slate-500">Spots</div>
+                    <div className="text-lg font-bold text-slate-900">
+                      {preview.spotCount}
+                    </div>
+                  </div>
+                  <div className="rounded-xl bg-slate-50 border border-slate-100 p-3">
+                    <div className="text-xs text-slate-500">Per hour</div>
+                    <div className="text-lg font-bold text-slate-900">
+                      ${preview.pricePerHour}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-3 rounded-xl bg-blue-50 border border-blue-100 p-3 text-sm">
+                  <div className="text-xs text-blue-700 font-semibold uppercase tracking-wider">
+                    If full (per hour)
+                  </div>
+                  <div className="mt-1 text-2xl font-bold text-slate-900">
+                    ${preview.totalIfFullPerHour}
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-xs text-slate-400">
+                Preview updates live as you type.
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Footer hint */}
-        <div className="text-center mt-8 text-purple-300/60 text-sm animate-[fadeIn_1s_ease-out]">
+        <div className="text-center mt-8 text-slate-400 text-sm animate-[fadeIn_1s_ease-out]">
           All fields marked with * are required
         </div>
       </div>
