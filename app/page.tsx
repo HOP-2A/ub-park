@@ -60,7 +60,6 @@ export default function Home() {
         {" "}
         <UserButton />
       </div>
-      hello main page
       <div className="flex flex-wrap justify-center gap-5 px-6">
         {places.map((place) => (
           <Card
@@ -87,8 +86,8 @@ export default function Home() {
             </CardContent>
 
             <CardAction className="flex justify-end px-4 pb-4">
-              <Button className="hover:translate-x-1 transition">
-                VIEW THIS PLACE
+              <Button className="hover:translate-x-1 transition bg-blue-700">
+                PARK HERE{" "}
               </Button>
             </CardAction>
           </Card>
