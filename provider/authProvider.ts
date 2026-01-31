@@ -4,7 +4,7 @@ type AuthUser = {
   id: string;
   clerkId: string;
   email: string | null;
-  firstName: string;
+  name: string;
   lastName: string | null;
   profilePic: string | null;
   age: number | null;

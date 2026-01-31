@@ -49,7 +49,6 @@ model ParkingSpot {
   place   Place  @relation(fields: [placeId], references: [id])
 
   bookings Booking[]
-
 }
 
 model Booking {
