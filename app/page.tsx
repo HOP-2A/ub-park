@@ -13,13 +13,14 @@ import {
 } from "@/components/ui/card";
 import { MoveRight } from "lucide-react";
 
-type placetype = {
+export type placetype = {
   id: string;
   name: string;
   address: string;
   city: string;
   latitude: string;
   longitude: string;
+  ownerId: string;
   parkings: string[];
 };
 export default function Home() {
@@ -37,7 +38,13 @@ export default function Home() {
     if (clerkUser?.publicMetadata.role === "OWNER") {
       router.push("/owner/dashbord");
     }
-  }, [clerkUser?.publicMetadata.role, isLoaded, isSignedIn, router, router.push]);
+  }, [
+    clerkUser?.publicMetadata.role,
+    isLoaded,
+    isSignedIn,
+    router,
+    router.push,
+  ]);
 
   useEffect(() => {
     const getplaces = async () => {
@@ -68,8 +75,7 @@ export default function Home() {
             onClick={() => router.push(`/${place.id}`)}
             className="w-[260px] cursor-pointer bg-white border border-pink-100
                        rounded-2xl shadow-md transition-all duration-300
-                       hover:shadow-xl hover:-translate-y-2"
-          >
+                       hover:shadow-xl hover:-translate-y-2">
             <CardFooter className="p-0"></CardFooter>
 
             <CardHeader className="space-y-2">

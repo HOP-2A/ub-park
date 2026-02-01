@@ -5,9 +5,6 @@ type AuthUser = {
   clerkId: string;
   email: string | null;
   name: string;
-  lastName: string | null;
-  profilePic: string | null;
-  age: number | null;
 };
 
 export const useAuth = (clerkId: string | null | undefined) => {
@@ -36,6 +33,7 @@ export const useAuth = (clerkId: string | null | undefined) => {
       fetchUser();
     } else {
       setLoading(false);
+      return;
     }
   }, [clerkId]);
 
