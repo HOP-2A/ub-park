@@ -7,6 +7,13 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+export type USER = {
+  email: string;
+  id: string;
+  clerkId: string;
+  name: string;
+};
+
 export default function Dashboard() {
   const { user: clerkUser, isLoaded } = useUser();
   const { user } = useAuth(clerkUser?.id);
@@ -32,7 +39,7 @@ export default function Dashboard() {
       </div>
     );
   }
-  const myPlaces = places.filter((item) => item.ownerId === user?.id!);
+  const myPlaces = places.filter((item) => item.ownerId === user?.id);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
@@ -61,7 +68,8 @@ export default function Dashboard() {
               onClick={() => router.push(`/owner/dashbord/${place.id}`)}
               className="bg-white rounded-xl shadow-md border-2 border-blue-100 
                      cursor-pointer transition-all duration-300 overflow-hidden
-                     hover:shadow-xl hover:-translate-y-2 hover:border-blue-300">
+                     hover:shadow-xl hover:-translate-y-2 hover:border-blue-300"
+            >
               <OwnerCard place={place} />
             </div>
           ))}

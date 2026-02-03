@@ -10,7 +10,8 @@ export const OwnerCard = ({ place }: OwnerCardProps) => {
         <div className="flex items-center gap-3 mb-3">
           <div
             className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 
-                            flex items-center justify-center shadow-lg">
+                            flex items-center justify-center shadow-lg"
+          >
             <span className="text-white text-xl">📍</span>
           </div>
           <div className="flex-1">
@@ -31,13 +32,14 @@ export const OwnerCard = ({ place }: OwnerCardProps) => {
           </p>
         </div>
       </div>
-      ;
+
       <div className="px-6 pb-6">
         <button
           className="w-full bg-gradient-to-r from-blue-600 to-blue-500 
                              text-white font-medium py-3 rounded-lg
                              hover:from-blue-700 hover:to-blue-600
-                             transition-all duration-300 shadow-md hover:shadow-lg">
+                             transition-all duration-300 shadow-md hover:shadow-lg"
+        >
           View Details →
         </button>
       </div>

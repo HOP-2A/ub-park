@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Calendar,
   BarChart3,
@@ -19,13 +19,34 @@ import {
 } from "lucide-react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { useAuth } from "@/provider/authProvider";
+import { placetype } from "@/app/page";
+import { useParams } from "next/navigation";
+
+export type parkingSpot = {
+  id: string;
+  name: string;
+  number: string;
+  pricePerHour: string;
+  isAvailable: boolean;
+};
 
 export default function Parking() {
   const [view, setView] = useState("days");
   const [selectedDate, setSelectedDate] = useState(29);
-  const { user: clerkUser } = useUser();
+  const [parkingSpots, setParkingSpots] = useState<parkingSpot[]>([]);
+  const { user: clerkUser, isLoaded } = useUser();
   const { user } = useAuth(clerkUser?.id);
-  console.log(user);
+  const { placeId } = useParams();
+
+  useEffect(() => {
+    const getplaces = async () => {
+      const response = await fetch(`/api/currentPlace/${placeId}`);
+      const data = await response.json();
+      setParkingSpots(data.message.parkings);
+    };
+    getplaces();
+  }, [isLoaded]);
+  console.log(parkingSpots, "daddsadsas");
 
   const dates = [
     { day: "Thu", date: 29, month: "Jan" },
@@ -70,39 +91,6 @@ export default function Parking() {
       icon: TrendingUp,
       color: "red",
       trend: "+8%",
-    },
-  ];
-
-  const parkingSpots = [
-    {
-      id: "P1",
-      name: "Premium Garage",
-      floor: "Floor -1",
-      available: 12,
-      total: 50,
-      price: "$5/hr",
-      distance: "0.2 mi",
-      rating: 4.8,
-    },
-    {
-      id: "P2",
-      name: "Downtown Plaza",
-      floor: "Ground Floor",
-      available: 8,
-      total: 30,
-      price: "$4/hr",
-      distance: "0.5 mi",
-      rating: 4.6,
-    },
-    {
-      id: "P3",
-      name: "Business Center",
-      floor: "Floor -2",
-      available: 25,
-      total: 80,
-      price: "$6/hr",
-      distance: "0.3 mi",
-      rating: 4.9,
     },
   ];
 
@@ -379,9 +367,6 @@ export default function Parking() {
               <h2 className="text-2xl font-bold text-slate-900">
                 Available Parking Spots
               </h2>
-              <span className="text-sm text-slate-500">
-                {parkingSpots.length} locations found
-              </span>
             </div>
 
             <div className="space-y-4">
@@ -393,41 +378,40 @@ export default function Parking() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-6 flex-1">
                       {/* Spot ID */}
-                      <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform duration-300">
+                      <div className="w-15 h-15 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform duration-300">
                         <span className="text-3xl font-bold text-white">
-                          {spot.id}
+                          {spot.number}
                         </span>
                       </div>
 
                       {/* Spot Info */}
                       <div className="flex-1">
                         <h3 className="text-xl font-bold text-slate-900 mb-1">
-                          {spot.name}
+                          {spot.number} parking spot
                         </h3>
-                        <p className="text-sm text-slate-500 mb-3">
-                          {spot.floor} · {spot.distance}
-                        </p>
-
                         <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                            <span className="text-sm font-semibold text-slate-700">
-                              {spot.available}/{spot.total} available
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                            <span className="text-sm font-semibold text-slate-700">
-                              {spot.rating}
-                            </span>
-                          </div>
+                          {spot.isAvailable === true ? (
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                              <span className="text-sm font-semibold text-slate-700">
+                                Available
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-3 h-3 bg-red-500 rounded-full "></div>
+                              <span className="text-sm font-semibold text-slate-700">
+                                Occupied
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
 
                       {/* Price */}
                       <div className="text-center px-6 py-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
                         <p className="text-2xl font-bold text-blue-600">
-                          {spot.price}
+                          {spot.pricePerHour}$
                         </p>
                         <p className="text-xs text-slate-500 font-medium">
                           per hour
