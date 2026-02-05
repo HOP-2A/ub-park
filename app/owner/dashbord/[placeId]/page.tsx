@@ -33,6 +33,7 @@ export type parkingSpot = {
 export default function Parking() {
   const [view, setView] = useState("days");
   const [selectedDate, setSelectedDate] = useState(29);
+  const [currParking, setCurrParking] = useState<parkingSpot[]>([]);
   const [parkingSpots, setParkingSpots] = useState<parkingSpot[]>([]);
   const { user: clerkUser, isLoaded } = useUser();
   const { user } = useAuth(clerkUser?.id);
@@ -42,6 +43,7 @@ export default function Parking() {
     const getplaces = async () => {
       const response = await fetch(`/api/currentPlace/${placeId}`);
       const data = await response.json();
+      setCurrParking(data.message);
       setParkingSpots(data.message.parkings);
     };
     getplaces();
@@ -66,7 +68,7 @@ export default function Parking() {
   const stats = [
     {
       label: "Total Spots",
-      value: "247",
+      value: `${parkingSpots.length}`,
       icon: Car,
       color: "blue",
       trend: "+12%",
@@ -160,7 +162,7 @@ export default function Parking() {
             </ul>
           </div>
 
-          <div>
+          {/* <div>
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-4">
               Quick Actions
             </p>
@@ -175,7 +177,7 @@ export default function Parking() {
                 </a>
               </li>
             </ul>
-          </div>
+          </div> */}
         </nav>
 
         {/* Bottom section */}
@@ -216,13 +218,13 @@ export default function Parking() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-slate-900 mb-1">
-                Find Your Spot
+                {currParking.name}
               </h1>
               <p className="text-sm text-slate-500">
                 Book parking spots near you
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
@@ -234,7 +236,7 @@ export default function Parking() {
               <button className="p-3 border border-slate-300 rounded-xl hover:bg-slate-100 transition-colors bg-white shadow-sm">
                 <Filter className="w-5 h-5 text-slate-600" />
               </button>
-            </div>
+            </div> */}
           </div>
         </header>
 
@@ -292,10 +294,10 @@ export default function Parking() {
               </button>
             </div>
 
-            <div className="flex items-center gap-2 text-sm text-slate-600">
+            {/* <div className="flex items-center gap-2 text-sm text-slate-600">
               <Clock className="w-4 h-4" />
               <span>Updated 2 mins ago</span>
-            </div>
+            </div> */}
           </div>
 
           {/* Calendar dates */}

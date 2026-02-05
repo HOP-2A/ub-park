@@ -19,7 +19,7 @@ export default function Dashboard() {
   const { user } = useAuth(clerkUser?.id);
   const router = useRouter();
   const [places, setPlaces] = useState<placetype[]>([]);
-  console.log(clerkUser, "clerkshit");
+  console.log(places);
 
   useEffect(() => {
     const getplaces = async () => {
