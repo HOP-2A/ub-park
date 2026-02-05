@@ -21,6 +21,7 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import { useAuth } from "@/provider/authProvider";
 import { placetype } from "@/app/page";
 import { useParams } from "next/navigation";
+import { getDate } from "date-fns";
 
 export type parkingSpot = {
   id: string;
@@ -29,12 +30,19 @@ export type parkingSpot = {
   pricePerHour: string;
   isAvailable: boolean;
 };
+type CalendarDate = {
+  day: string;
+  weekday: string;
+  month: string;
+  isToday: boolean;
+};
 
 export default function Parking() {
   const [view, setView] = useState("days");
-  const [selectedDate, setSelectedDate] = useState(29);
+  const [selectedDate, setSelectedDate] = useState();
   const [currParking, setCurrParking] = useState<parkingSpot[]>([]);
   const [parkingSpots, setParkingSpots] = useState<parkingSpot[]>([]);
+  const [dates, setDates] = useState<CalendarDate[]>([]);
   const { user: clerkUser, isLoaded } = useUser();
   const { user } = useAuth(clerkUser?.id);
   const { placeId } = useParams();
@@ -50,20 +58,26 @@ export default function Parking() {
   }, [isLoaded]);
   console.log(parkingSpots, "daddsadsas");
 
-  const dates = [
-    { day: "Thu", date: 29, month: "Jan" },
-    { day: "Fri", date: 30, month: "Jan" },
-    { day: "Mon", date: 2, month: "Feb" },
-    { day: "Tue", date: 3, month: "Feb" },
-    { day: "Wed", date: 4, month: "Feb" },
-    { day: "Thu", date: 5, month: "Feb" },
-    { day: "Fri", date: 6, month: "Feb" },
-    { day: "Mon", date: 9, month: "Feb" },
-    { day: "Tue", date: 10, month: "Feb" },
-    { day: "Wed", date: 11, month: "Feb" },
-    { day: "Thu", date: 12, month: "Feb" },
-    { day: "Fri", date: 13, month: "Feb" },
-  ];
+  useEffect(() => {
+    const now = new Date();
+    const currDate = new Date(now);
+    const generated = Array.from({ length: 10 }, (_, i) => {
+      const d = new Date(now);
+
+      d.setDate(now.getDate() + i);
+
+      return {
+        day: d.toLocaleDateString("en-US", { day: "numeric" }),
+        weekday: d.toLocaleDateString("en-US", { weekday: "short" }), // Mon
+        month: d.toLocaleDateString("en-US", { month: "short" }), // Feb
+        isToday: i === 0,
+      };
+    });
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDates(generated);
+    setSelectedDate(currDate);
+  }, []);
+  console.log(dates);
 
   const stats = [
     {
@@ -305,24 +319,24 @@ export default function Parking() {
             {dates.map((item, index) => (
               <button
                 key={index}
-                onClick={() => setSelectedDate(item.date)}
+                onClick={() => setSelectedDate(item.day)}
                 className={`flex-shrink-0 flex flex-col items-center justify-center w-20 h-25 rounded-xl border-2 transition-all ${
-                  selectedDate === item.date
+                  selectedDate === item.day
                     ? "border-blue-600 bg-blue-50"
                     : "border-gray-200 bg-white hover:border-gray-300"
                 }`}
               >
                 <span className="text-xs text-gray-500 font-medium mb-1">
-                  {item.day}
+                  {item.weekday}
                 </span>
                 <span
                   className={`text-2xl font-bold ${
-                    selectedDate === item.date
+                    selectedDate === item.day
                       ? "text-blue-600"
                       : "text-gray-900"
                   }`}
                 >
-                  {item.date}
+                  {item.day}
                 </span>
                 <span className="text-xs text-gray-400">{item.month}</span>
               </button>
