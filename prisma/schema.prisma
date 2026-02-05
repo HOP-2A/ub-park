@@ -38,7 +38,6 @@ model Place {
   parkings ParkingSpot[]
 }
 
-
 model ParkingSpot {
   id           String  @id @default(nanoid())
   number       String
@@ -49,7 +48,6 @@ model ParkingSpot {
   place   Place  @relation(fields: [placeId], references: [id])
 
   bookings Booking[]
-
 }
 
 model Booking {
