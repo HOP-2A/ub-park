@@ -12,6 +12,12 @@ enum UserRole {
   USER
 }
 
+enum SlotStatus {
+  AVAILABLE
+  BOOKED
+  DISABLED
+}
+
 model User {
   id        String   @id @default(nanoid())
   name      String
@@ -39,34 +45,65 @@ model Place {
 }
 
 
+// model ParkingSpot {
+//   id           String  @id @default(nanoid())
+//   number       String
+//   pricePerHour Float
+//   isAvailable  Boolean @default(true)
+
+//   placeId String
+//   place   Place  @relation(fields: [placeId], references: [id])
+
+//   bookings Booking[]
+// }
 model ParkingSpot {
-  id           String  @id @default(nanoid())
-  number       String
-  pricePerHour Float
-  isAvailable  Boolean @default(true)
-
+  id        String     @id @default(cuid())
+  label     String
+  x         Float
+  y         Float
+  width     Float
+  height    Float
   placeId String
-  place   Place  @relation(fields: [placeId], references: [id])
-
-  bookings Booking[]
+  place Place @relation(fields: [placeId], references: [id])
+  rotation  Float      @default(0)
+  status    SlotStatus @default(AVAILABLE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  bookings  Booking[]
 }
 
 model Booking {
   id            String @id @default(nanoid())
   userId        String
-  parkingSpotId String
+  slotId String
 
   startTime  DateTime
-  endTime    DateTime
+  endTime    DateTime?
   totalPrice Float
-  status     BookingStatus @default(PENDING)
+  status     BookingStatus @default(CONFIRMED)
 
   user        User        @relation(fields: [userId], references: [id])
-  parkingSpot ParkingSpot @relation(fields: [parkingSpotId], references: [id])
+  parkingSlot ParkingSpot @relation(fields: [slotId], references: [id])
 
   payment   Payment?
   createdAt DateTime @default(now())
+  updatedAt   DateTime    @updatedAt
 }
+// model BookingNew {
+//   id          String      @id @default(cuid())
+//   userId      String // Clerk user ID
+//   slotId      String
+//   slot        ParkingSlot @relation(fields: [slotId], references: [id])
+//   startTime   DateTime
+//   endTime     DateTime?
+//   totalAmount Float?
+//    user        User        @relation(fields: [userId], references: [id])
+//   parkingSpot ParkingSlot @relation(fields: [slotId], references: [id])
+//   status      String      @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED
+//   createdAt   DateTime    @default(now())
+//   updatedAt   DateTime    @updatedAt
+// }
+
 
 model Payment {
   id        String        @id @default(nanoid())
