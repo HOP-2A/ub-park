@@ -57,7 +57,7 @@ export default function AddParkingLot() {
     city: "",
     latitude: "",
     longitude: "",
-    spotCount: 10,
+    slotCount: 10,
     pricePerHour: 5,
   });
 
@@ -121,7 +121,7 @@ export default function AddParkingLot() {
   }, [form.latitude, form.longitude]);
 
   const generateSpots = () => {
-    return Array.from({ length: Number(form.spotCount) || 0 }, (_, i) => ({
+    return Array.from({ length: Number(form.slotCount) || 0 }, (_, i) => ({
       number: `${i + 1}`,
       pricePerHour: Number(form.pricePerHour) || 0,
     }));
@@ -183,10 +183,10 @@ export default function AddParkingLot() {
       address: form.address || "—",
       lat: okLatLng ? lat : null,
       lng: okLatLng ? lng : null,
-      spotCount: Number(form.spotCount) || 0,
+      spotCount: Number(form.slotCount) || 0,
       pricePerHour: Number(form.pricePerHour) || 0,
       totalIfFullPerHour:
-        (Number(form.spotCount) || 0) * (Number(form.pricePerHour) || 0),
+        (Number(form.slotCount) || 0) * (Number(form.pricePerHour) || 0),
       okLatLng,
     };
   }, [form]);
@@ -386,7 +386,7 @@ export default function AddParkingLot() {
                       type="number"
                       min="1"
                       placeholder="50"
-                      value={String(form.spotCount)}
+                      value={String(form.slotCount)}
                       onChange={handleChange}
                       onFocus={() => setFocusedField("spotCount")}
                       onBlur={() => setFocusedField("")}
