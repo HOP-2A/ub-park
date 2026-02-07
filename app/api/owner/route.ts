@@ -5,9 +5,9 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { name, address, city, latitude, longitude, ownerId, spots } = body;
+    const { name, address, city, latitude, longitude, ownerId } = body;
 
-    if (!name || !address || !city || !ownerId || !Array.isArray(spots)) {
+    if (!name || !address || !city || !ownerId) {
       return NextResponse.json({ message: "Invalid payload" }, { status: 400 });
     }
 
@@ -24,15 +24,15 @@ export async function POST(req: Request) {
     });
 
     // 2️⃣ Bulk create parking spots
-    if (spots.length > 0) {
-      await prisma.parkingSpot.createMany({
-        data: spots.map((spot: any) => ({
-          number: spot.number,
-          pricePerHour: spot.pricePerHour,
-          placeId: place.id,
-        })),
-      });
-    }
+    // if (slot.length > 0) {
+    //   await prisma.parkingSpot.createMany({
+    //     data: slot.map((spot: any) => ({
+    //       number: spot.number,
+    //       pricePerHour: spot.pricePerHour,
+    //       placeId: place.id,
+    //     })),
+    //   });
+    // }
 
     return NextResponse.json(
       { message: "Parking lot created", placeId: place.id },
@@ -43,3 +43,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
+
+// || !Array.isArray(slot)
