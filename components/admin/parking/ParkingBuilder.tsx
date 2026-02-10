@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -23,12 +23,18 @@ import { v4 as uuidv4 } from "uuid";
 import {
   getParkingLayout,
   saveParkingLayout,
-} from "@/app/actions/parkingExtensions"; 
+} from "@/app/actions/parkingExtensions";
+type ParkingBuilderProps = {
+  placeId: string;
+};
 
-export function ParkingBuilder() {
+export function ParkingBuilder({ placeId }: ParkingBuilderProps) {
   const [slots, setSlots] = useState<ParkingSlot[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
+  console.log(placeId, "dasds");
+
+  console.log(slots, "slotiin ym");
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -73,7 +79,7 @@ export function ParkingBuilder() {
     setActiveId(null);
   };
 
-  const addSlot = (type: ParkingSlot["type"]) => {
+  const addSlot = (type: ParkingSlot[]) => {
     const newSlot: ParkingSlot = {
       id: uuidv4(),
       label: `Slot ${slots.length + 1}`,
@@ -82,8 +88,8 @@ export function ParkingBuilder() {
       width: 60,
       height: 100,
       rotation: 0,
-      type: type,
       status: "AVAILABLE",
+      placeId: placeId,
     };
     setSlots([...slots, newSlot]);
     setSelectedSlotId(newSlot.id);
@@ -101,7 +107,7 @@ export function ParkingBuilder() {
   };
 
   const handleSave = async () => {
-    const result = await saveParkingLayout(slots);
+    const result = await saveParkingLayout(placeId, slots);
     if (result.success) {
       toast.success("Layout saved successfully");
     } else {
@@ -110,15 +116,15 @@ export function ParkingBuilder() {
   };
 
   // Load initial data
-  React.useEffect(() => {
+  useEffect(() => {
     const load = async () => {
-      const loadedSlots = await getParkingLayout();
+      const loadedSlots = await getParkingLayout(placeId);
       if (loadedSlots && loadedSlots.length > 0) {
         setSlots(loadedSlots);
       }
     };
     load();
-  }, []);
+  }, [placeId]);
 
   const selectedSlot = slots.find((s) => s.id === selectedSlotId);
 
@@ -164,4 +170,4 @@ export function ParkingBuilder() {
       {/* <DragOverlay>...</DragOverlay> */}
     </DndContext>
   );
-}   
+}
