@@ -15,10 +15,11 @@ export function ParkingCanvas({ slots }: ParkingCanvasProps) {
   return (
     <div
       ref={setNodeRef}
-      className="w-full h-full relative bg-[url('/grid.svg')] bg-repeat" // Simple grid background
+      className="w-full h-full relative bg-[url('/grid.svg')] bg-repeat"
       style={{
         backgroundSize: "20px 20px",
-        backgroundImage: "radial-gradient(circle, #ddd 1px, transparent 1px)",
+        backgroundImage:
+          "radial-gradient(circle, #26bd28ff 1px, transparent 1px)",
       }}
     >
       {slots.map((slot) => (

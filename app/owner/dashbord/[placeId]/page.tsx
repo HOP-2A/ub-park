@@ -60,6 +60,7 @@ export default function Parking() {
     getplaces();
   }, [isLoaded]);
   console.log(parkingSpots, "daddsadsas");
+  console.log(slots, "sdafasdgfshgfdhgda");
 
   useEffect(() => {
     const now = new Date();
@@ -80,10 +81,9 @@ export default function Parking() {
     setDates(generated);
     setSelectedDate(currDate);
   }, []);
-  console.log(dates);
   useEffect(() => {
     const load = async () => {
-      const loadedSlots = await getParkingLayout(placeId);
+      const loadedSlots = await getParkingLayout(`${placeId}`);
       if (loadedSlots && loadedSlots.length > 0) {
         setSlots(loadedSlots);
       }
@@ -355,30 +355,30 @@ export default function Parking() {
             ))}
           </div>
           {/* Map placeholder with enhanced design */}
-          <div className="relative bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 rounded-3xl h-96 mb-8 flex items-center justify-center overflow-hidden shadow-2xl border border-slate-700">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(59,130,246,0.15),transparent_50%)]"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,rgba(139,92,246,0.15),transparent_50%)]"></div>
+          <div className="relative bg-black rounded-3xl h-96 mb-8 flex items-center justify-center overflow-hidden shadow-2xl border-2 border-blue-500">
+            {/* Simple blue accent in corner */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 opacity-5 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600 opacity-5 rounded-full blur-3xl"></div>
 
-            {/* Grid overlay */}
-            <div className="absolute inset-0 opacity-10">
+            {/* Clean grid */}
+            <div className="absolute inset-0 opacity-[0.15]">
               <div
                 className="w-full h-full"
                 style={{
                   backgroundImage:
-                    "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-                  backgroundSize: "50px 50px",
+                    "linear-gradient(rgb(59,130,246) 1px, transparent 1px), linear-gradient(90deg, rgb(59,130,246) 1px, transparent 1px)",
+                  backgroundSize: "40px 40px",
                 }}
               ></div>
             </div>
 
-            <div className="relative z-10 flex-1 bg-slate-50 border overflow-hidden">
-              <ParkingCanvas slots={slots} />
-            </div>
+            <ParkingCanvas slots={slots} />
 
-            {/* Decorative elements */}
-            <div className="absolute top-10 left-10 w-3 h-3 bg-blue-500 rounded-full shadow-lg shadow-blue-500/50"></div>
-            <div className="absolute top-20 right-20 w-2 h-2 bg-purple-500 rounded-full shadow-lg shadow-purple-500/50"></div>
-            <div className="absolute bottom-20 left-20 w-2 h-2 bg-pink-500 rounded-full shadow-lg shadow-pink-500/50"></div>
+            {/* Corner indicators */}
+            <div className="absolute top-4 left-4 w-2 h-2 bg-blue-500 rounded-full"></div>
+            <div className="absolute top-4 right-4 w-2 h-2 bg-blue-500 rounded-full"></div>
+            <div className="absolute bottom-4 left-4 w-2 h-2 bg-blue-500 rounded-full"></div>
+            <div className="absolute bottom-4 right-4 w-2 h-2 bg-blue-500 rounded-full"></div>
           </div>
 
           {/* Availability section */}
