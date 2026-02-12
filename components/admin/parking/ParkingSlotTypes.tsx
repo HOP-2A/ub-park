@@ -1,4 +1,3 @@
-export type SlotType = "CAR";
 export type SlotStatus = "AVAILABLE" | "BOOKED" | "DISABLED";
 
 export interface ParkingSlot {
@@ -9,6 +8,6 @@ export interface ParkingSlot {
   width: number;
   height: number;
   rotation: number;
-  type: SlotType;
   status: SlotStatus;
+  placeId: string;
 }

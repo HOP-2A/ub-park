@@ -3,7 +3,7 @@ import { Car } from "lucide-react";
 import { SlotType } from "./ParkingSlotTypes";
 
 interface ParkingToolbarProps {
-  onAddCheck: (type: SlotType) => void;
+  onAddCheck: (type: SlotType) => void; 
 }
 
 export function ParkingToolbar({ onAddCheck }: ParkingToolbarProps) {

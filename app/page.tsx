@@ -24,7 +24,7 @@ import {
   Map as MapIcon,
 } from "lucide-react";
 
-type placetype = {
+export type placetype = {
   id: string;
   name: string;
   address: string;
@@ -32,6 +32,7 @@ type placetype = {
   latitude: string;
   longitude: string;
   parkings: string[];
+  ownerId: string;
 };
 
 export default function Home() {
