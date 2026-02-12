@@ -119,6 +119,7 @@ export default function Dashboard() {
               className="bg-gradient-to-r from-blue-600 to-blue-500 text-white 
                              px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg
                              transition-all duration-300"
+              onClick={() => router.push("/owner/createPlace")}
             >
               Add New Place
             </button>

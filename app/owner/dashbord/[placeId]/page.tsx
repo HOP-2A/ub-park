@@ -16,11 +16,11 @@ import {
   Car,
   TrendingUp,
   Users,
+  CircleParking,
 } from "lucide-react";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { useAuth } from "@/provider/authProvider";
-import { placetype } from "@/app/page";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ParkingCanvas } from "@/components/admin/parking/ParkingCanvas";
 import { getParkingLayout } from "@/app/actions/parkingExtensions";
 import { ParkingSlot } from "@/components/admin/parking/ParkingSlotTypes";
@@ -41,13 +41,14 @@ type CalendarDate = {
 
 export default function Parking() {
   const [view, setView] = useState("days");
-  const [selectedDate, setSelectedDate] = useState();
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [currParking, setCurrParking] = useState<parkingSpot[]>([]);
   const [parkingSpots, setParkingSpots] = useState<parkingSpot[]>([]);
   const [slots, setSlots] = useState<ParkingSlot[]>([]);
   const [dates, setDates] = useState<CalendarDate[]>([]);
   const { user: clerkUser, isLoaded } = useUser();
   const { user } = useAuth(clerkUser?.id);
+  const router = useRouter();
   const { placeId } = useParams();
 
   useEffect(() => {
@@ -130,7 +131,7 @@ export default function Parking() {
         <div className="p-6 border-b border-slate-200/60">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <MapPin className="w-6 h-6 text-white" />
+              <CircleParking className="w-6 h-6 text-white" />
             </div>
             <div>
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
@@ -188,22 +189,39 @@ export default function Parking() {
             </ul>
           </div>
 
-          {/* <div>
+          <div>
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-4">
               Quick Actions
             </p>
-            <ul className="space-y-1">
+            <ul
+              className="space-y-1"
+              onClick={() => router.push("/owner/dashbord")}
+            >
               <li>
                 <a
                   href="#"
                   className="flex items-center gap-3 px-4 py-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all duration-200"
                 >
                   <Users className="w-5 h-5" />
-                  <span className="font-medium text-sm">My Bookings</span>
+                  <span className="font-medium text-sm">Switch parkings</span>
                 </a>
               </li>
             </ul>
-          </div> */}
+            <ul
+              className="space-y-1"
+              onClick={() => router.push(`/owner/dashbord/${placeId}/parking`)}
+            >
+              <li>
+                <a
+                  href="#"
+                  className="flex items-center gap-3 px-4 py-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all duration-200"
+                >
+                  <Users className="w-5 h-5" />
+                  <span className="font-medium text-sm">Edit parking</span>
+                </a>
+              </li>
+            </ul>
+          </div>
         </nav>
 
         {/* Bottom section */}
