@@ -158,10 +158,11 @@ export default function BookingPage() {
               />
               <Calendar label="End" value={endTime} onChange={setEndTime} />
             </div>
-
-            <ParkingCanvas slots={slots} />
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div>
+              {" "}
+              <ParkingCanvas slots={slots} />
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 h-[300px]">
               {/* {parkings.map((p) => {
                 const available = isSpotAvailable(p.id);
                 const bookedTimes = getBookedTimes(p.id);
