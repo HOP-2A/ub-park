@@ -262,8 +262,8 @@ export default function PlaceDetailsPage() {
                 </div>
                 <div className="mt-1 text-sm text-slate-600">{place.city}</div>
               </div>
-
-              {/* Stats grid */}
+              {/* 
+              Stats grid
               <div className="grid grid-cols-2 gap-3">
                 <StatCard
                   icon={<ParkingCircle className="w-4 h-4" />}
@@ -277,7 +277,7 @@ export default function PlaceDetailsPage() {
                 />
               </div>
 
-              {/* Availability bar */}
+              Availability bar
               <div className="rounded-2xl border border-blue-100 p-4">
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -299,7 +299,7 @@ export default function PlaceDetailsPage() {
                   {availableCount} of {totalCount} spots available
                 </div>
               </div>
-
+ */}
               {/* CTA */}
               <div className="pt-2">
                 <button
@@ -317,7 +317,7 @@ export default function PlaceDetailsPage() {
                 </button>
 
                 <div className="mt-3 text-xs text-slate-400 text-center">
-                  You’ll pick a spot on the next step.
+                  You will pick a spot on the next step.
                 </div>
               </div>
             </div>
