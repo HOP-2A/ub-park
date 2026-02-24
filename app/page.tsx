@@ -285,7 +285,7 @@ export default function Home() {
                       className="relative w-full group overflow-hidden"
                       onClick={(e) => {
                         e.stopPropagation();
-                        router.push(`/booking/${place.id}`);
+                        router.push(`/${place.id}`);
                       }}
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600 rounded-2xl transition-all duration-500 group-hover:scale-105" />
