@@ -6,7 +6,7 @@ import { useAuth } from "@/provider/authProvider";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { MapPinHouse } from "lucide-react";
+import { CirclePlus, MapPinHouse } from "lucide-react";
 
 export type USER = {
   email: string;
@@ -61,20 +61,28 @@ export default function Dashboard() {
         {/* Stats Card */}
         {myPlaces && myPlaces.length > 0 && (
           <div className="mb-8 bg-white rounded-xl shadow-md border border-blue-100 p-6">
-            <div className="flex items-center gap-4">
-              <div
-                className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 
-                            flex items-center justify-center shadow-lg">
-                <span className="text-2xl font-bold text-white">
-                  <MapPinHouse />
-                </span>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                <div
+                  className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 
+                            flex items-center justify-center shadow-lg"
+                >
+                  <span className="text-2xl font-bold text-white">
+                    <MapPinHouse />
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Total Locations</p>
+                  <p className="text-lg font-semibold text-gray-800">
+                    {myPlaces.length} {""}
+                    Parking Spots
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-500">Total Locations</p>
-                <p className="text-lg font-semibold text-gray-800">
-                  {myPlaces.length} {""}
-                  Parking Spots
-                </p>
+              <div onClick={() => router.push("/owner/createPlace")}>
+                <button className="flex gap-4 border border-blue-100 p-3 rounded-xl font-semibold">
+                  ADD PARKING <CirclePlus color="#2e50dc" />
+                </button>
               </div>
             </div>
           </div>
@@ -90,7 +98,8 @@ export default function Dashboard() {
                        cursor-pointer transition-all duration-300 overflow-hidden
                        hover:shadow-xl hover:-translate-y-2 hover:border-blue-300
                        animate-fadeIn"
-              style={{ animationDelay: `${index * 0.1}s` }}>
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
               <OwnerCard place={place} />
             </div>
           ))}
@@ -101,7 +110,8 @@ export default function Dashboard() {
           <div className="text-center py-20">
             <div
               className="w-24 h-24 mx-auto mb-6 rounded-full bg-blue-100 
-                          flex items-center justify-center">
+                          flex items-center justify-center"
+            >
               <span className="text-5xl">🏢</span>
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-2">
@@ -113,7 +123,8 @@ export default function Dashboard() {
             <button
               className="bg-gradient-to-r from-blue-600 to-blue-500 text-white 
                              px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg
-                             transition-all duration-300">
+                             transition-all duration-300"
+            >
               Add New Place
             </button>
           </div>
