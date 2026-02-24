@@ -3,8 +3,16 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { SquareParking, CheckCircle2, ParkingCircle, ArrowRight } from "lucide-react";
+import {
+  SquareParking,
+  CheckCircle2,
+  ParkingCircle,
+  ArrowRight,
+} from "lucide-react";
 import { Calendar } from "@/components/calendar/page";
+import { ParkingCanvas } from "@/components/admin/parking/ParkingCanvas";
+import { getParkingLayout } from "@/app/actions/parkingExtensions";
+import { ParkingSlot } from "@/components/admin/parking/ParkingSlotTypes";
 
 type Booking = {
   id: string;
@@ -33,6 +41,14 @@ type Place = {
   parkings?: Parking[];
 };
 
+export type parkingSpot = {
+  id: string;
+  name: string;
+  number: string;
+  pricePerHour: string;
+  isAvailable: boolean;
+};
+
 export default function BookingPage() {
   const params = useParams<{ place: string }>();
   const placeId = params.place;
@@ -41,17 +57,24 @@ export default function BookingPage() {
 
   const [place, setPlace] = useState<Place | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [selectedParkingId, setSelectedParkingId] = useState<string | null>(null);
+  const [selectedParkingId, setSelectedParkingId] = useState<string | null>(
+    null
+  );
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [loading, setLoading] = useState(false);
+  const [currParking, setCurrParking] = useState<parkingSpot[]>([]);
+  const [parkingSpots, setParkingSpots] = useState<parkingSpot[]>([]);
+  const [slots, setSlots] = useState<ParkingSlot[]>([]);
 
   useEffect(() => {
     fetch(`/api/place/${placeId}`)
-      .then(res => res.json())
-      .then(data => setPlace(data.message ?? null));
+      .then((res) => res.json())
+      .then((data) => setPlace(data.message ?? null));
 
-    fetch(`/api/booking`).then(res => res.json()).then(setBookings);
+    fetch(`/api/booking`)
+      .then((res) => res.json())
+      .then(setBookings);
   }, [placeId]);
 
   const parkings = Array.isArray(place?.parkings) ? place!.parkings : [];
@@ -60,7 +83,7 @@ export default function BookingPage() {
     if (!startTime || !endTime) return true;
     const start = new Date(startTime).getTime();
     const end = new Date(endTime).getTime();
-    return !bookings.some(b => {
+    return !bookings.some((b) => {
       if (b.parkingSpot.id !== parkingId) return false;
       const s = new Date(b.startTime).getTime();
       const e = new Date(b.endTime).getTime();
@@ -69,7 +92,7 @@ export default function BookingPage() {
   };
 
   const getBookedTimes = (parkingId: string) =>
-    bookings.filter(b => b.parkingSpot.id === parkingId);
+    bookings.filter((b) => b.parkingSpot.id === parkingId);
 
   const createBooking = async () => {
     if (!selectedParkingId || !startTime || !endTime) {
@@ -80,7 +103,12 @@ export default function BookingPage() {
     await fetch("/api/booking", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: USER_ID, parkingSpotId: selectedParkingId, startTime, endTime })
+      body: JSON.stringify({
+        userId: USER_ID,
+        parkingSpotId: selectedParkingId,
+        startTime,
+        endTime,
+      }),
     });
     const res = await fetch(`/api/booking`);
     setBookings(await res.json());
@@ -88,8 +116,18 @@ export default function BookingPage() {
   };
 
   const totalCount = parkings.length;
-  const availableCount = parkings.filter(p => isSpotAvailable(p.id)).length;
-  const availabilityPct = totalCount > 0 ? Math.round((availableCount / totalCount) * 100) : 0;
+  const availableCount = parkings.filter((p) => isSpotAvailable(p.id)).length;
+  const availabilityPct =
+    totalCount > 0 ? Math.round((availableCount / totalCount) * 100) : 0;
+  useEffect(() => {
+    const load = async () => {
+      const loadedSlots = await getParkingLayout(placeId);
+      if (loadedSlots && loadedSlots.length > 0) {
+        setSlots(loadedSlots);
+      }
+    };
+    load();
+  }, [placeId]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-50 flex items-center justify-center p-6">
@@ -102,7 +140,9 @@ export default function BookingPage() {
           <h1 className="text-5xl font-bold text-slate-900 mb-3 tracking-tight">
             {place?.name ?? "Loading..."}
           </h1>
-          <p className="text-slate-500 text-lg">Select your time and reserve a parking spot</p>
+          <p className="text-slate-500 text-lg">
+            Select your time and reserve a parking spot
+          </p>
         </div>
 
         {/* Time pickers + booking cards */}
@@ -111,13 +151,19 @@ export default function BookingPage() {
           <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl border border-blue-100 animate-[slideUp_0.8s_ease-out] space-y-6">
             {/* Calendar */}
             <div className="grid grid-cols-2 gap-4">
-              <Calendar label="Start" value={startTime} onChange={setStartTime} />
+              <Calendar
+                label="Start"
+                value={startTime}
+                onChange={setStartTime}
+              />
               <Calendar label="End" value={endTime} onChange={setEndTime} />
             </div>
-
-            {/* Parking spots */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {parkings.map(p => {
+            <div>
+              {" "}
+              <ParkingCanvas slots={slots} />
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 h-[300px]">
+              {/* {parkings.map((p) => {
                 const available = isSpotAvailable(p.id);
                 const bookedTimes = getBookedTimes(p.id);
 
@@ -125,7 +171,9 @@ export default function BookingPage() {
                   <div
                     key={p.id}
                     className={`border rounded-2xl p-4 flex flex-col justify-between ${
-                      selectedParkingId === p.id ? "bg-green-50 border-green-300" : "bg-white border-blue-100"
+                      selectedParkingId === p.id
+                        ? "bg-green-50 border-green-300"
+                        : "bg-white border-blue-100"
                     }`}
                   >
                     <button
@@ -143,18 +191,17 @@ export default function BookingPage() {
                       </div>
                     </button>
 
-                    {/* Booked times */}
                     <div className="mt-3 text-xs text-slate-500 max-h-28 overflow-y-auto">
                       <strong>Booked:</strong>
                       {bookedTimes.length === 0 && <div>— none</div>}
-                      {bookedTimes.map(b => (
+                      {bookedTimes.map((b) => (
                         <div key={b.id} className="mt-1">
                           {new Date(b.startTime).toLocaleString(undefined, {
                             month: "short",
                             day: "numeric",
                             year: "numeric",
                             hour: "2-digit",
-                            minute: "2-digit"
+                            minute: "2-digit",
                           })}{" "}
                           →{" "}
                           {new Date(b.endTime).toLocaleString(undefined, {
@@ -162,17 +209,16 @@ export default function BookingPage() {
                             day: "numeric",
                             year: "numeric",
                             hour: "2-digit",
-                            minute: "2-digit"
+                            minute: "2-digit",
                           })}
                         </div>
                       ))}
                     </div>
                   </div>
                 );
-              })}
+              })} */}
             </div>
 
-            {/* Confirm button */}
             <Button
               onClick={createBooking}
               disabled={loading || !selectedParkingId}
@@ -189,15 +235,32 @@ export default function BookingPage() {
 
           {/* Stats */}
           <div className="bg-white rounded-3xl p-6 shadow-xl border border-blue-100 animate-[slideUp_0.9s_ease-out] space-y-4">
+            <div className="flex items-center gap-2 text-blue-600 mb-4">
+              <span className="text-sm font-semibold uppercase tracking-wider">
+                Parking lots
+              </span>
+            </div>
             <div className="grid grid-cols-2 gap-3">
-              <StatCard icon={<ParkingCircle className="w-4 h-4" />} label="Parking lots" value={String(totalCount)} />
-              <StatCard icon={<CheckCircle2 className="w-4 h-4" />} label="Available" value={String(availableCount)} />
+              <StatCard
+                icon={<ParkingCircle className="w-4 h-4" />}
+                label="Parking lots"
+                value={String(totalCount)}
+              />
+              <StatCard
+                icon={<CheckCircle2 className="w-4 h-4" />}
+                label="Available"
+                value={String(availableCount)}
+              />
             </div>
 
             <div className="rounded-2xl border border-blue-100 p-4 mt-4">
               <div className="flex items-center justify-between">
-                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Availability</div>
-                <div className="text-sm font-bold text-slate-900">{availabilityPct}%</div>
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Availability
+                </div>
+                <div className="text-sm font-bold text-slate-900">
+                  {availabilityPct}%
+                </div>
               </div>
 
               <div className="mt-3 h-3 rounded-full bg-slate-100 overflow-hidden">
@@ -207,7 +270,9 @@ export default function BookingPage() {
                 />
               </div>
 
-              <div className="mt-2 text-xs text-slate-400">{availableCount} of {totalCount} spots available</div>
+              <div className="mt-2 text-xs text-slate-400">
+                {availableCount} of {totalCount} spots available
+              </div>
             </div>
           </div>
         </div>
@@ -218,20 +283,56 @@ export default function BookingPage() {
       </div>
 
       <style jsx>{`
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
       `}</style>
     </div>
   );
 }
 
-function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+function StatCard({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
   return (
     <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4">
       <div className="flex items-center gap-2 text-slate-500">
         <span className="text-blue-500">{icon}</span>
-        <div className="text-xs uppercase tracking-wider font-semibold">{label}</div>
+        <div className="text-xs uppercase tracking-wider font-semibold">
+          {label}
+        </div>
       </div>
       <div className="mt-2 text-2xl font-bold text-slate-900">{value}</div>
     </div>
