@@ -20,15 +20,15 @@ export const OwnerCard = ({ place }: OwnerCardProps) => {
         </div>
       </div>
       <div className="p-6 space-y-4">
-        <div className="flex items-start gap-2 text-sm text-gray-600">
+        <div className="flex items-start gap-2 text-x text-gray-600 font-bold">
           <span>📌</span>
           <span>{place.address}</span>
         </div>
 
-        <div className="bg-blue-50 rounded-lg p-4">
-          <p className="text-xs text-gray-500 mb-1">Parking Spots</p>
+        <div className="bg-blue-50 rounded-lg p-4 flex gap-2 items-center">
+          <p className="text-x text-gray-500 mb-1">Parking Spots</p>
           <p className="text-2xl font-bold text-blue-600">
-            {/* {place.parkings?.length || 0} */}
+            {place.parkings?.length || 0}
           </p>
         </div>
       </div>

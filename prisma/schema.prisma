@@ -39,25 +39,25 @@ model Place {
 }
 
 model ParkingSpot {
-  id        String     @id @default(cuid())
-  label     String
-  x         Float
-  y         Float
-  width     Float
-  height    Float
-  placeId String
-  place   Place  @relation(fields: [placeId], references: [id])
-  rotation  Float      @default(0)
-  status    SlotStatus @default(AVAILABLE)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  bookings  Booking[]
+  id           String     @id @default(cuid())
+  label        String
+  x            Float
+  y            Float
+  width        Float
+  height       Float
+  placeId      String
+  place        Place      @relation(fields: [placeId], references: [id])
+  rotation     Float      @default(0)
+  status       SlotStatus @default(AVAILABLE)
+  PricePerHour Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  bookings     Booking[]
 }
-
 
 model Booking {
   id          String      @id @default(cuid())
-  userId      String 
+  userId      String
   slotId      String
   slot        ParkingSpot @relation(fields: [slotId], references: [id])
   startTime   DateTime
@@ -65,7 +65,7 @@ model Booking {
   totalAmount Float?
   payment     Payment?
   user        User        @relation(fields: [userId], references: [id])
-  status      String      @default("ACTIVE") 
+  status      String      @default("ACTIVE")
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
