@@ -3,17 +3,17 @@ import prisma from "@/lib/db";
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { userId, parkingSpotId, startTime, endTime } = body;
+  const { userId, slotId, startTime, endTime } = body;
 
-  if (!userId || !parkingSpotId || !startTime || !endTime) {
+  if (!userId || !slotId || !startTime || !endTime) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
   const spot = await prisma.parkingSpot.findUnique({
-    where: { id: parkingSpotId }
+    where: { id: slotId },
   });
 
-  if (!spot || !spot.isAvailable) {
+  if (!spot) {
     return NextResponse.json({ error: "Spot unavailable" }, { status: 400 });
   }
 
@@ -23,15 +23,12 @@ export async function POST(req: Request) {
   // overlap check
   const overlap = await prisma.booking.findFirst({
     where: {
-      parkingSpotId,
+      slotId,
       status: { in: ["PENDING", "CONFIRMED"] },
       NOT: {
-        OR: [
-          { endTime: { lte: start } },
-          { startTime: { gte: end } }
-        ]
-      }
-    }
+        OR: [{ endTime: { lte: start } }, { startTime: { gte: end } }],
+      },
+    },
   });
 
   if (overlap) {
@@ -46,29 +43,24 @@ export async function POST(req: Request) {
   const booking = await prisma.booking.create({
     data: {
       userId,
-      parkingSpotId,
+      slotId,
       startTime: start,
       endTime: end,
-      totalPrice: hours * spot.pricePerHour
-    }
+      // totalPrice: hours * spot.pricePerHour
+    },
   });
 
   return NextResponse.json(booking);
 }
-
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("userId");
-
-  const bookings = await prisma.booking.findMany({
-    where: userId ? { userId } : undefined,
-    include: {
-      parkingSpot: {
-        include: { place: true }
-      }
-    },
-    orderBy: { createdAt: "desc" }
-  });
-
-  return NextResponse.json(bookings);
+export async function GET() {
+  try {
+    const allBookings = await prisma.booking.findMany();
+    return NextResponse.json(allBookings, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Failed to fetch bookings" },
+      { status: 500 },
+    );
+  }
 }
