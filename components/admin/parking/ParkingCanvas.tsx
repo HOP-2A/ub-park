@@ -1,13 +1,19 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { DraggableSlot } from "./DraggableSlot";
 import { ParkingSlot } from "./ParkingSlotTypes";
 
 interface ParkingCanvasProps {
   slots: ParkingSlot[];
+  setSelectedParkingId: Dispatch<SetStateAction<string | null>>;
+  selectedParkingId: Dispatch<SetStateAction<string | null>>;
 }
 
-export function ParkingCanvas({ slots }: ParkingCanvasProps) {
+export function ParkingCanvas({
+  slots,
+  setSelectedParkingId,
+  selectedParkingId,
+}: ParkingCanvasProps) {
   const { setNodeRef } = useDroppable({
     id: "canvas",
   });
@@ -23,7 +29,12 @@ export function ParkingCanvas({ slots }: ParkingCanvasProps) {
       }}
     >
       {slots.map((slot) => (
-        <DraggableSlot key={slot.id} slot={slot} />
+        <DraggableSlot
+          key={slot.id}
+          slot={slot}
+          setSelectedParkingId={setSelectedParkingId}
+          selectedParkingId={selectedParkingId}
+        />
       ))}
     </div>
   );

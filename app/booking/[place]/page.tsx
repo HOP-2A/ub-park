@@ -53,18 +53,16 @@ export default function BookingPage() {
   const params = useParams<{ place: string }>();
   const placeId = params.place;
 
-  const USER_ID = "LjlTwIcZtvsRCPVopkN0U";
+  const USER_ID = "QM9qpIUylTc1dYCJC0YZT";
 
   const [place, setPlace] = useState<Place | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedParkingId, setSelectedParkingId] = useState<string | null>(
-    null
+    null,
   );
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [loading, setLoading] = useState(false);
-  const [currParking, setCurrParking] = useState<parkingSpot[]>([]);
-  const [parkingSpots, setParkingSpots] = useState<parkingSpot[]>([]);
   const [slots, setSlots] = useState<ParkingSlot[]>([]);
 
   useEffect(() => {
@@ -79,10 +77,13 @@ export default function BookingPage() {
 
   const parkings = Array.isArray(place?.parkings) ? place!.parkings : [];
 
+  // Inside BookingPage
   const isSpotAvailable = (parkingId: string) => {
-    if (!startTime || !endTime) return true;
+    if (!startTime || !endTime) return true; // if no time selected, all spots available
     const start = new Date(startTime).getTime();
     const end = new Date(endTime).getTime();
+
+    // Check for any overlapping booking
     return !bookings.some((b) => {
       if (b.parkingSpot.id !== parkingId) return false;
       const s = new Date(b.startTime).getTime();
@@ -91,9 +92,16 @@ export default function BookingPage() {
     });
   };
 
-  const getBookedTimes = (parkingId: string) =>
-    bookings.filter((b) => b.parkingSpot.id === parkingId);
+  const slotsWithAvailability = slots.map((slot) => ({
+    ...slot,
+    isAvailable: isSpotAvailable(slot.id), // dynamically computed
+  }));
 
+  const getBookedTimes = async () => {
+    const res = await fetch(`/api/booking`);
+    setBookings(await res.json());
+    setLoading(false);
+  };
   const createBooking = async () => {
     if (!selectedParkingId || !startTime || !endTime) {
       alert("Select time and parking spot");
@@ -105,20 +113,18 @@ export default function BookingPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userId: USER_ID,
-        parkingSpotId: selectedParkingId,
+        slotId: selectedParkingId,
         startTime,
         endTime,
       }),
     });
-    const res = await fetch(`/api/booking`);
-    setBookings(await res.json());
-    setLoading(false);
   };
 
   const totalCount = parkings.length;
-  const availableCount = parkings.filter((p) => isSpotAvailable(p.id)).length;
+  const availableCount = parkings.filter((p) => p.id).length;
   const availabilityPct =
     totalCount > 0 ? Math.round((availableCount / totalCount) * 100) : 0;
+
   useEffect(() => {
     const load = async () => {
       const loadedSlots = await getParkingLayout(placeId);
@@ -127,8 +133,11 @@ export default function BookingPage() {
       }
     };
     load();
+    getBookedTimes();
   }, [placeId]);
 
+  console.log(selectedParkingId, "gg");
+  console.log(bookings);
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-50 flex items-center justify-center p-6">
       <div className="w-full max-w-6xl space-y-6">
@@ -160,7 +169,11 @@ export default function BookingPage() {
             </div>
             <div>
               {" "}
-              <ParkingCanvas slots={slots} />
+              <ParkingCanvas
+                slots={slotsWithAvailability}
+                setSelectedParkingId={setSelectedParkingId}
+                selectedParkingId={selectedParkingId}
+              />
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 h-[300px]">
               {/* {parkings.map((p) => {
