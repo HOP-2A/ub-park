@@ -1,14 +1,21 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { ParkingSlot } from "./ParkingSlotTypes";
 import { cn } from "@/lib/utils";
 import { Car } from "lucide-react";
+import { stringify } from "querystring";
 
 interface DraggableSlotProps {
   slot: ParkingSlot;
+  setSelectedParkingId: Dispatch<SetStateAction<string | null>>;
+  selectedParkingId: Dispatch<SetStateAction<string | null>>;
 }
 
-export function DraggableSlot({ slot }: DraggableSlotProps) {
+export function DraggableSlot({
+  slot,
+  setSelectedParkingId,
+  selectedParkingId,
+}: DraggableSlotProps) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: slot.id,
   });
@@ -30,8 +37,14 @@ export function DraggableSlot({ slot }: DraggableSlotProps) {
     }
   };
 
+  const handleSelectParking = (slotId: string) => {
+    setSelectedParkingId(slotId);
+  };
+  const selected = slot.id === selectedParkingId;
+
   return (
     <div
+      onClick={() => handleSelectParking(slot.id)}
       ref={setNodeRef}
       style={{
         ...style,
@@ -42,8 +55,9 @@ export function DraggableSlot({ slot }: DraggableSlotProps) {
         transform: `rotate(${slot.rotation}deg)`,
       }}
       className={cn(
-        "absolute rounded-md border-2 shadow-sm cursor-move flex flex-col items-center justify-center p-1 select-none transition-colors hover:border-black/50 hover:shadow-md",
+        "absolute rounded-md border-2 shadow-sm cursor-move flex flex-col items-center justify-center p-1 select-none transition-colors hover:shadow-md",
         getColor(),
+        selected && "border-2 border-blue-500",
       )}
       {...listeners}
       {...attributes}

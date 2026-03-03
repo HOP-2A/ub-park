@@ -299,7 +299,7 @@ export default function Home() {
                   </CardAction>
 
                   {/* subtle corner accents */}
-                  <div className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-blue-100 to-transparent rounded-tl-3xl pointer-events-none" />
+                  <div className="absolute top-0 left-0 w-24 h-24 } from-blue-100 to-transparent rounded-tl-3xl pointer-events-none" />
                   <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-sky-100 to-transparent rounded-br-3xl pointer-events-none" />
                 </Card>
               ))}
