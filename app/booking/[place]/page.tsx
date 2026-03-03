@@ -84,12 +84,12 @@ export default function BookingPage() {
     const end = new Date(endTime).getTime();
 
     // Check for any overlapping booking
-    return !bookings.some((b) => {
-      if (b.parkingSpot.id !== parkingId) return false;
-      const s = new Date(b.startTime).getTime();
-      const e = new Date(b.endTime).getTime();
-      return start < e && end > s;
-    });
+    // return !bookings.some((b) => {
+    //   if (b.parkingSpot.id !== parkingId) return false;
+    //   const s = new Date(b.startTime).getTime();
+    //   const e = new Date(b.endTime).getTime();
+    //   return start < e && end > s;
+    // });
   };
 
   const slotsWithAvailability = slots.map((slot) => ({
