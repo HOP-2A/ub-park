@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -24,6 +24,8 @@ import {
   getParkingLayout,
   saveParkingLayout,
 } from "@/app/actions/parkingExtensions";
+import { useAuth, UserButton, useUser } from "@clerk/nextjs";
+import router from "next/router";
 type ParkingBuilderProps = {
   placeId: string;
 };
@@ -32,6 +34,7 @@ export function ParkingBuilder({ placeId }: ParkingBuilderProps) {
   const [slots, setSlots] = useState<ParkingSlot[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
+
   console.log(placeId, "dasds");
 
   console.log(slots, "slotiin ym");
@@ -135,17 +138,21 @@ export function ParkingBuilder({ placeId }: ParkingBuilderProps) {
       onDragEnd={handleDragEnd}
       modifiers={[createSnapModifier(10)]} // Snap to 10px grid
     >
-      <div className="flex h-full w-full">
+      <div className="flex h-screen w-full">
         {/* Left Toolbar */}
-        <ParkingToolbar onAddCheck={addSlot} />
 
         {/* Center Canvas */}
         <div className="flex-1 relative bg-slate-50 border-r border-l overflow-hidden">
-          <div className="absolute top-4 right-4 z-10">
-            <Button onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Layout
-            </Button>
+          <div className="absolute top-4 right-4 z-10 flex gap-2 ">
+            <div>
+              <Button onClick={handleSave}>
+                <Save className="mr-2 h-4 w-4" />
+                Save Layout
+              </Button>
+            </div>
+            <div>
+              <ParkingToolbar onAddCheck={addSlot} />
+            </div>
           </div>
           <ParkingCanvas slots={slots} />
         </div>

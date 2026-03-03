@@ -1,5 +1,5 @@
 export type SlotStatus = "AVAILABLE" | "BOOKED" | "DISABLED";
-
+export type SlotType = "CAR";
 export interface ParkingSlot {
   id: string;
   label: string;
