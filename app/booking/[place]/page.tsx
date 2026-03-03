@@ -13,6 +13,10 @@ import { Calendar } from "@/components/calendar/page";
 import { ParkingCanvas } from "@/components/admin/parking/ParkingCanvas";
 import { getParkingLayout } from "@/app/actions/parkingExtensions";
 import { ParkingSlot } from "@/components/admin/parking/ParkingSlotTypes";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/provider/authProvider";
+import { useUser } from "@clerk/nextjs";
 
 type Booking = {
   id: string;
@@ -52,13 +56,16 @@ export type parkingSpot = {
 export default function BookingPage() {
   const params = useParams<{ place: string }>();
   const placeId = params.place;
+  const router = useRouter();
+  const { user: clerkUser, isLoaded } = useUser();
+  const { user } = useAuth(clerkUser?.id);
 
-  const USER_ID = "QM9qpIUylTc1dYCJC0YZT";
+  const USER_ID = user?.id;
 
   const [place, setPlace] = useState<Place | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedParkingId, setSelectedParkingId] = useState<string | null>(
-    null,
+    null
   );
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -102,24 +109,40 @@ export default function BookingPage() {
     setBookings(await res.json());
     setLoading(false);
   };
+
   const createBooking = async () => {
     if (!selectedParkingId || !startTime || !endTime) {
-      alert("Select time and parking spot");
+      toast.error("Please select time and parking spot");
       return;
     }
-    setLoading(true);
-    await fetch("/api/booking", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId: USER_ID,
-        slotId: selectedParkingId,
-        startTime,
-        endTime,
-      }),
-    });
-  };
 
+    try {
+      setLoading(true);
+
+      const res = await fetch("/api/booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: USER_ID,
+          slotId: selectedParkingId,
+          startTime,
+          endTime,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Booking failed");
+      }
+
+      toast.success("Booking created successfully 🚗");
+      router.push("/");
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong ❌");
+    } finally {
+      setLoading(false);
+    }
+  };
   const totalCount = parkings.length;
   const availableCount = parkings.filter((p) => p.id).length;
   const availabilityPct =
@@ -136,8 +159,6 @@ export default function BookingPage() {
     getBookedTimes();
   }, [placeId]);
 
-  console.log(selectedParkingId, "gg");
-  console.log(bookings);
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-50 flex items-center justify-center p-6">
       <div className="w-full max-w-6xl space-y-6">

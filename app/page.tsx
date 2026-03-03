@@ -121,26 +121,6 @@ export default function Home() {
                   <span className="font-semibold">Home</span>
                 </a>
               </li>
-
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center gap-3 px-4 py-3 text-slate-700 rounded-2xl hover:bg-blue-50 transition-colors"
-                >
-                  <BarChart3 className="w-5 h-5 text-blue-500" />
-                  <span className="font-semibold">Dashboard</span>
-                </a>
-              </li>
-
-              <li>
-                <button className="flex items-center justify-between w-full px-4 py-3 text-slate-700 rounded-2xl hover:bg-blue-50 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <Settings className="w-5 h-5 text-blue-500" />
-                    <span className="font-semibold">Settings</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-slate-400" />
-                </button>
-              </li>
             </ul>
 
             {/* Quick stats */}
@@ -167,17 +147,7 @@ export default function Home() {
 
           {/* Bottom */}
           <div className="p-4 border-t border-blue-100">
-            <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-blue-50 cursor-pointer transition-colors">
-              <div className="relative">
-                <Bell className="w-5 h-5 text-slate-700" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-[10px] flex items-center justify-center">
-                  2
-                </span>
-              </div>
-              <span className="text-sm font-semibold text-slate-700">
-                Notifications
-              </span>
-            </div>
+            <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-blue-50 cursor-pointer transition-colors"></div>
 
             <div className="flex items-center gap-3 p-3 mt-2 rounded-2xl bg-white border border-blue-100">
               <UserButton />
