@@ -13,12 +13,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  BarChart3,
-  Bell,
-  ChevronRight,
   House,
+  BookMarked,
   MapPin,
-  Settings,
   ArrowRight,
   ParkingCircle,
   Map as MapIcon,
@@ -91,9 +88,9 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-50">
       <div className="flex min-h-screen">
         {/* Sidebar */}
-        <aside className="w-72 bg-white/80 backdrop-blur border-r border-blue-100 flex flex-col">
+        <aside className="w-72 bg-white/80 backdrop-blur border-r border-slate-200 flex flex-col">
           {/* Brand */}
-          <div className="p-6 border-b border-blue-100">
+          <div className="p-6 border-b border-slate-200">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-sky-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
                 <MapPin className="w-5 h-5 text-white" />
@@ -121,10 +118,24 @@ export default function Home() {
                   <span className="font-semibold">Home</span>
                 </a>
               </li>
+              <li>
+                <a
+                  href="#"
+                  className="flex items-center gap-3 px-4 py-3 text-black bg-gradient-to-r  rounded-2xl shadow-md "
+                >
+                  <BookMarked className="w-5 h-5" />
+                  <span
+                    className="font-semibold"
+                    onClick={() => router.push(`/myBookings`)}
+                  >
+                    My Bookings
+                  </span>
+                </a>
+              </li>
             </ul>
 
             {/* Quick stats */}
-            <div className="mt-6 rounded-3xl border border-blue-100 bg-white p-4 shadow-sm">
+            <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
                 Quick stats
               </div>
@@ -146,10 +157,8 @@ export default function Home() {
           </nav>
 
           {/* Bottom */}
-          <div className="p-4 border-t border-blue-100">
-            <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-blue-50 cursor-pointer transition-colors"></div>
-
-            <div className="flex items-center gap-3 p-3 mt-2 rounded-2xl bg-white border border-blue-100">
+          <div className="p-4 border-t border-slate-200">
+            <div className="flex items-center gap-3 p-3 mt-2 rounded-2xl bg-white border border-slate-200">
               <UserButton />
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-slate-900 truncate">
@@ -184,7 +193,7 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="rounded-3xl border border-blue-100 bg-white p-4 shadow-sm w-full md:w-auto">
+              <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm w-full md:w-auto">
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   Total places
                 </div>
@@ -206,7 +215,7 @@ export default function Home() {
                 <Card
                   key={place.id}
                   onClick={() => router.push(`/${place.id}`)}
-                  className="cursor-pointer bg-white rounded-3xl shadow-xl border border-blue-100 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 overflow-hidden"
+                  className="cursor-pointer bg-white rounded-3xl shadow-xl border border-slate-200 transition-all duration-300 hover:shadow-2xl  overflow-hidden"
                 >
                   <CardFooter className="p-0">
                     {/* top accent */}
@@ -231,7 +240,7 @@ export default function Home() {
                   </CardHeader>
 
                   <CardContent className="text-sm text-slate-700 space-y-3">
-                    <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4">
+                    <div className="rounded-2xl border border-slate-200 bg-blue-50 p-4">
                       <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
                         Address
                       </div>
@@ -267,10 +276,6 @@ export default function Home() {
                       </div>
                     </button>
                   </CardAction>
-
-                  {/* subtle corner accents */}
-                  <div className="absolute top-0 left-0 w-24 h-24 } from-blue-100 to-transparent rounded-tl-3xl pointer-events-none" />
-                  <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-sky-100 to-transparent rounded-br-3xl pointer-events-none" />
                 </Card>
               ))}
             </div>
@@ -332,7 +337,7 @@ function PlacesGridSkeleton() {
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="relative bg-white rounded-3xl shadow-xl border border-blue-100 overflow-hidden"
+          className="relative bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden"
         >
           <div className="h-2 w-full bg-slate-100 animate-pulse" />
           <div className="p-6">
@@ -344,7 +349,7 @@ function PlacesGridSkeleton() {
               <div className="w-12 h-12 bg-slate-100 rounded-2xl animate-pulse" />
             </div>
 
-            <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50/40 p-4">
+            <div className="mt-5 rounded-2xl border border-slate-200 bg-blue-50/40 p-4">
               <div className="h-3 w-16 bg-slate-100 rounded-md animate-pulse" />
               <div className="mt-2 h-4 w-full bg-slate-100 rounded-md animate-pulse" />
               <div className="mt-2 h-4 w-3/4 bg-slate-100 rounded-md animate-pulse" />
@@ -365,7 +370,7 @@ function PlacesGridSkeleton() {
 
 function EmptyState({ onRefresh }: { onRefresh: () => void }) {
   return (
-    <div className="bg-white rounded-3xl border border-blue-100 shadow-xl p-8 text-center animate-[fadeIn_0.6s_ease-out]">
+    <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-8 text-center animate-[fadeIn_0.6s_ease-out]">
       <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-sky-500 rounded-2xl mb-5 shadow-lg shadow-blue-200">
         <MapPin className="w-8 h-8 text-white" />
       </div>
@@ -388,7 +393,7 @@ function EmptyState({ onRefresh }: { onRefresh: () => void }) {
 function FullPageLoading({ label }: { label: string }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-50 flex items-center justify-center p-6">
-      <div className="w-full max-w-xl bg-white rounded-3xl p-8 shadow-xl border border-blue-100 animate-[slideUp_0.8s_ease-out]">
+      <div className="w-full max-w-xl bg-white rounded-3xl p-8 shadow-xl border border-slate-200 animate-[slideUp_0.8s_ease-out]">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-500 shadow-lg shadow-blue-200 animate-[float_3s_ease-in-out_infinite]" />
           <div className="min-w-0">

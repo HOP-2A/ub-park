@@ -64,7 +64,7 @@ export default function AddParkingLot() {
   // ✅ Map state (default: Ulaanbaatar-ish center; change if you want)
   const defaultCenter = useMemo<LatLng>(
     () => ({ lat: 47.9185, lng: 106.917 }),
-    []
+    [],
   );
   const [picked, setPicked] = useState<LatLng | null>(null);
 
@@ -211,7 +211,7 @@ export default function AddParkingLot() {
         {/* Layout: form + preview */}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Form */}
-          <div className="lg:col-span-2 relative bg-white rounded-3xl p-8 shadow-xl border border-blue-100 animate-[slideUp_0.8s_ease-out]">
+          <div className="lg:col-span-2 relative bg-white rounded-3xl p-8 shadow-xl border border-slate-200 animate-[slideUp_0.8s_ease-out]">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Location */}
               <div className="space-y-4">
@@ -279,7 +279,7 @@ export default function AddParkingLot() {
                   </span>
                 </div>
 
-                <div className="rounded-2xl overflow-hidden border border-blue-100 shadow-sm">
+                <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
                   <div className="bg-blue-50 px-4 py-3 text-sm text-slate-600 flex items-center justify-between gap-3">
                     <span>
                       Tip: click anywhere on the map → lat/lng auto fills
@@ -432,14 +432,10 @@ export default function AddParkingLot() {
                 </button>
               </div>
             </form>
-
-            {/* subtle corner accents */}
-            <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-transparent rounded-tl-3xl pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-sky-100 to-transparent rounded-br-3xl pointer-events-none" />
           </div>
 
           {/* Preview Card */}
-          <div className="relative bg-white rounded-3xl p-6 shadow-xl border border-blue-100 animate-[slideUp_0.9s_ease-out] h-fit">
+          <div className="relative bg-white rounded-3xl p-6 shadow-xl border border-slate-200 animate-[slideUp_0.9s_ease-out] h-fit">
             <div className="flex items-center gap-2 text-blue-600 mb-4">
               <Sparkles className="w-5 h-5" />
               <span className="text-sm font-semibold uppercase tracking-wider">
@@ -448,7 +444,7 @@ export default function AddParkingLot() {
             </div>
 
             <div className="space-y-4">
-              <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4">
+              <div className="rounded-2xl border border-slate-200 bg-blue-50 p-4">
                 <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
                   Parking Lot
                 </div>
@@ -463,7 +459,7 @@ export default function AddParkingLot() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-blue-100 p-4">
+              <div className="rounded-2xl border border-slate-200 p-4">
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   Coordinates
                 </div>
@@ -502,7 +498,7 @@ export default function AddParkingLot() {
                 )}
               </div>
 
-              <div className="rounded-2xl border border-blue-100 p-4">
+              <div className="rounded-2xl border border-slate-200 p-4">
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   Capacity & Pricing
                 </div>
@@ -522,7 +518,7 @@ export default function AddParkingLot() {
                   </div>
                 </div>
 
-                <div className="mt-3 rounded-xl bg-blue-50 border border-blue-100 p-3 text-sm">
+                <div className="mt-3 rounded-xl bg-blue-50 border border-slate-200 p-3 text-sm">
                   <div className="text-xs text-blue-700 font-semibold uppercase tracking-wider">
                     If full (per hour)
                   </div>

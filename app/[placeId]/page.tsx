@@ -51,7 +51,7 @@ export default function PlaceDetailsPage() {
           `/api/place/${encodeURIComponent(placeId)}`,
           {
             cache: "no-store",
-          }
+          },
         );
 
         if (!response.ok) {
@@ -93,7 +93,7 @@ export default function PlaceDetailsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-50 flex items-center justify-center p-6">
-        <div className="w-full max-w-3xl bg-white rounded-3xl p-8 shadow-xl border border-blue-100 animate-[slideUp_0.8s_ease-out]">
+        <div className="w-full max-w-3xl bg-white rounded-3xl p-8 shadow-xl border border-slate-200 animate-[slideUp_0.8s_ease-out]">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-500 shadow-lg shadow-blue-200 animate-[float_3s_ease-in-out_infinite]" />
             <div>
@@ -103,12 +103,12 @@ export default function PlaceDetailsPage() {
           </div>
 
           <div className="mt-8 grid md:grid-cols-2 gap-4">
-            <div className="h-[340px] rounded-2xl border border-blue-100 bg-blue-50/40 animate-pulse" />
+            <div className="h-[340px] rounded-2xl border border-slate-200 bg-blue-50/40 animate-pulse" />
             <div className="space-y-3">
-              <div className="h-14 rounded-2xl border border-blue-100 bg-blue-50/40 animate-pulse" />
-              <div className="h-14 rounded-2xl border border-blue-100 bg-blue-50/40 animate-pulse" />
-              <div className="h-14 rounded-2xl border border-blue-100 bg-blue-50/40 animate-pulse" />
-              <div className="h-14 rounded-2xl border border-blue-100 bg-blue-50/40 animate-pulse" />
+              <div className="h-14 rounded-2xl border border-slate-200 bg-blue-50/40 animate-pulse" />
+              <div className="h-14 rounded-2xl border border-slate-200 bg-blue-50/40 animate-pulse" />
+              <div className="h-14 rounded-2xl border border-slate-200 bg-blue-50/40 animate-pulse" />
+              <div className="h-14 rounded-2xl border border-slate-200 bg-blue-50/40 animate-pulse" />
               <div className="h-12 rounded-2xl bg-slate-100 animate-pulse" />
             </div>
           </div>
@@ -142,7 +142,7 @@ export default function PlaceDetailsPage() {
   if (!place) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-50 flex items-center justify-center p-6">
-        <div className="w-full max-w-xl bg-white rounded-3xl p-8 shadow-xl border border-blue-100 animate-[fadeIn_0.6s_ease-out] text-center">
+        <div className="w-full max-w-xl bg-white rounded-3xl p-8 shadow-xl border border-slate-200 animate-[fadeIn_0.6s_ease-out] text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-sky-500 rounded-2xl mb-6 shadow-xl shadow-blue-200">
             <Building2 className="w-10 h-10 text-white" />
           </div>
@@ -190,15 +190,16 @@ export default function PlaceDetailsPage() {
           <h1 className="text-5xl font-bold text-slate-900 mb-3 tracking-tight">
             {place.name}
           </h1>
+
           <p className="text-slate-500 text-lg">
             View location details and reserve a spot
           </p>
         </div>
 
-        {/* Layout: map + info */}
+        {/* Layout */}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Map card */}
-          <div className="lg:col-span-2 relative bg-white rounded-3xl p-6 shadow-xl border border-blue-100 animate-[slideUp_0.8s_ease-out]">
+          <div className="lg:col-span-2 relative bg-white rounded-3xl p-6 shadow-xl border border-slate-200 animate-[slideUp_0.8s_ease-out]">
             <div className="flex items-center gap-2 text-blue-600 mb-4">
               <MapIcon className="w-5 h-5" />
               <span className="text-sm font-semibold uppercase tracking-wider">
@@ -206,10 +207,10 @@ export default function PlaceDetailsPage() {
               </span>
             </div>
 
-            <div className="rounded-2xl overflow-hidden border border-blue-100 shadow-sm">
+            <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
               <div className="bg-blue-50 px-4 py-3 text-sm text-slate-600 flex items-center justify-between gap-3">
                 <span>
-                  Coordinates:{" "}
+                  Coordinates:
                   <span className="font-semibold text-slate-800">
                     {place.latitude}, {place.longitude}
                   </span>
@@ -220,7 +221,7 @@ export default function PlaceDetailsPage() {
                   onClick={() =>
                     window.open(
                       `https://www.google.com/maps?q=${place.latitude},${place.longitude}`,
-                      "_blank"
+                      "_blank",
                     )
                   }
                   className="text-blue-700 hover:text-blue-800 font-semibold"
@@ -233,14 +234,10 @@ export default function PlaceDetailsPage() {
                 <LeafletMap lat={place.latitude} lng={place.longitude} />
               </div>
             </div>
-
-            {/* subtle corner accents */}
-            <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-transparent rounded-tl-3xl pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-sky-100 to-transparent rounded-br-3xl pointer-events-none" />
           </div>
 
           {/* Info card */}
-          <div className="relative bg-white rounded-3xl p-6 shadow-xl border border-blue-100 animate-[slideUp_0.9s_ease-out] h-fit">
+          <div className="relative bg-white rounded-3xl p-6 shadow-xl border border-slate-200 animate-[slideUp_0.9s_ease-out] h-fit">
             <div className="flex items-center gap-2 text-blue-600 mb-4">
               <SparkHeaderIcon />
               <span className="text-sm font-semibold uppercase tracking-wider">
@@ -250,56 +247,21 @@ export default function PlaceDetailsPage() {
 
             <div className="space-y-4">
               {/* Address */}
-              <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4">
+              <div className="rounded-2xl border border-slate-200 bg-blue-50 p-4">
                 <div className="flex items-center gap-2 text-blue-700">
                   <MapPin className="w-4 h-4" />
                   <div className="text-xs font-semibold uppercase tracking-wider">
                     Address
                   </div>
                 </div>
+
                 <div className="mt-2 text-slate-900 font-bold">
                   {place.address}
                 </div>
+
                 <div className="mt-1 text-sm text-slate-600">{place.city}</div>
               </div>
-              {/* 
-              Stats grid
-              <div className="grid grid-cols-2 gap-3">
-                <StatCard
-                  icon={<ParkingCircle className="w-4 h-4" />}
-                  label="Parking lots"
-                  value={String(totalCount)}
-                />
-                <StatCard
-                  icon={<CheckCircle2 className="w-4 h-4" />}
-                  label="Available"
-                  value={String(availableCount)}
-                />
-              </div>
 
-              Availability bar
-              <div className="rounded-2xl border border-blue-100 p-4">
-                <div className="flex items-center justify-between">
-                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Availability
-                  </div>
-                  <div className="text-sm font-bold text-slate-900">
-                    {availabilityPct}%
-                  </div>
-                </div>
-
-                <div className="mt-3 h-3 rounded-full bg-slate-100 overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600 rounded-full transition-all duration-500"
-                    style={{ width: `${availabilityPct}%` }}
-                  />
-                </div>
-
-                <div className="mt-2 text-xs text-slate-400">
-                  {availableCount} of {totalCount} spots available
-                </div>
-              </div>
- */}
               {/* CTA */}
               <div className="pt-2">
                 <button
@@ -308,6 +270,7 @@ export default function PlaceDetailsPage() {
                   className="relative w-full group overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600 rounded-2xl transition-all duration-500 group-hover:scale-105" />
+
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-sky-300 to-blue-400 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
 
                   <div className="relative px-8 py-5 flex items-center justify-center gap-3 text-white font-bold text-lg">
@@ -321,10 +284,6 @@ export default function PlaceDetailsPage() {
                 </div>
               </div>
             </div>
-
-            {/* subtle corner accents */}
-            <div className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-blue-100 to-transparent rounded-tl-3xl pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-sky-100 to-transparent rounded-br-3xl pointer-events-none" />
           </div>
         </div>
 
@@ -344,6 +303,7 @@ export default function PlaceDetailsPage() {
             transform: translateY(0);
           }
         }
+
         @keyframes slideUp {
           from {
             opacity: 0;
@@ -354,6 +314,7 @@ export default function PlaceDetailsPage() {
             transform: translateY(0);
           }
         }
+
         @keyframes float {
           0%,
           100% {
@@ -366,53 +327,54 @@ export default function PlaceDetailsPage() {
       `}</style>
     </div>
   );
-}
 
-function StatCard({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4">
-      <div className="flex items-center gap-2 text-slate-500">
-        <span className="text-blue-500">{icon}</span>
-        <div className="text-xs uppercase tracking-wider font-semibold">
-          {label}
+  function StatCard({
+    icon,
+    label,
+    value,
+  }: {
+    icon: React.ReactNode;
+    label: string;
+    value: string;
+  }) {
+    return (
+      <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+        <div className="flex items-center gap-2 text-slate-500">
+          <span className="text-blue-500">{icon}</span>
+
+          <div className="text-xs uppercase tracking-wider font-semibold">
+            {label}
+          </div>
         </div>
-      </div>
-      <div className="mt-2 text-2xl font-bold text-slate-900">{value}</div>
-    </div>
-  );
-}
 
-function SparkHeaderIcon() {
-  // small inline sparkle-ish icon without importing extra
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      className="text-blue-600"
-    >
-      <path
-        d="M12 2l1.2 5.2L18 9l-4.8 1.8L12 16l-1.2-5.2L6 9l4.8-1.8L12 2Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M19 13l.6 2.6L22 17l-2.4.9L19 20l-.6-2.1L16 17l2.4-1.4L19 13Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-        opacity="0.8"
-      />
-    </svg>
-  );
+        <div className="mt-2 text-2xl font-bold text-slate-900">{value}</div>
+      </div>
+    );
+  }
+
+  function SparkHeaderIcon() {
+    return (
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        className="text-blue-600"
+      >
+        <path
+          d="M12 2l1.2 5.2L18 9l-4.8 1.8L12 16l-1.2-5.2L6 9l4.8-1.8L12 2Z"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M19 13l.6 2.6L22 17l-2.4.9L19 20l-.6-2.1L16 17l2.4-1.4L19 13Z"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinejoin="round"
+          opacity="0.8"
+        />
+      </svg>
+    );
+  }
 }

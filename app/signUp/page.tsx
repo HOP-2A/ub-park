@@ -35,7 +35,7 @@ export default function SignUp() {
   const [error, setError] = useState<string>("");
 
   const handler = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { value: v, name } = e.target;
     setValue((prev) => ({ ...prev, [name]: v }));
@@ -114,7 +114,7 @@ export default function SignUp() {
         {/* Layout: form + preview */}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Form */}
-          <div className="lg:col-span-2 relative bg-white rounded-3xl p-8 shadow-xl border border-blue-100 animate-[slideUp_0.8s_ease-out]">
+          <div className="lg:col-span-2 relative bg-white rounded-3xl p-8 shadow-xl border border-slate-200 animate-[slideUp_0.8s_ease-out]">
             <div className="flex items-center gap-2 text-blue-600 mb-6">
               <Users className="w-5 h-5" />
               <span className="text-sm font-semibold uppercase tracking-wider">
@@ -167,7 +167,7 @@ export default function SignUp() {
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400" />
                   <Input
                     className={inputWithIcon}
-                    placeholder="kenomu123"
+                    placeholder="username"
                     value={value.username}
                     name="username"
                     onChange={handler}
@@ -235,14 +235,10 @@ export default function SignUp() {
                 </div>
               </div>
             </div>
-
-            {/* subtle corner accents */}
-            <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-transparent rounded-tl-3xl pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-sky-100 to-transparent rounded-br-3xl pointer-events-none" />
           </div>
 
           {/* Preview */}
-          <div className="relative bg-white rounded-3xl p-6 shadow-xl border border-blue-100 animate-[slideUp_0.9s_ease-out] h-fit">
+          <div className="relative bg-white rounded-3xl p-6 shadow-xl border border-slate-200 animate-[slideUp_0.9s_ease-out] h-fit">
             <div className="flex items-center gap-2 text-blue-600 mb-4">
               <MapPin className="w-5 h-5" />
               <span className="text-sm font-semibold uppercase tracking-wider">
@@ -251,7 +247,7 @@ export default function SignUp() {
             </div>
 
             <div className="space-y-4">
-              <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4">
+              <div className="rounded-2xl border border-slate-200 bg-blue-50 p-4">
                 <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
                   Account
                 </div>
@@ -269,7 +265,7 @@ export default function SignUp() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-blue-100 p-4">
+              <div className="rounded-2xl border border-slate-200 p-4">
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   What you can do
                 </div>
@@ -293,10 +289,6 @@ export default function SignUp() {
                 Preview updates live as you type.
               </div>
             </div>
-
-            {/* subtle corner accents */}
-            <div className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-blue-100 to-transparent rounded-tl-3xl pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-sky-100 to-transparent rounded-br-3xl pointer-events-none" />
           </div>
         </div>
 

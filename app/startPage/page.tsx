@@ -130,11 +130,14 @@ export default function StartPage() {
                 </div>
               </div>
             </div>
+            <img
+              src={
+                "https://cdn.britannica.com/70/234870-050-D4D024BB/Orange-colored-cat-yawns-displaying-teeth.jpg"
+              }
+            />
           </div>
-
-          <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-transparent rounded-tl-3xl pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-sky-100 to-transparent rounded-br-3xl pointer-events-none" />
         </div>
+        <div></div>
 
         <div className="text-center mt-8 text-slate-400 text-sm animate-[fadeIn_1s_ease-out]">
           By continuing, you agree to the app’s terms and policies.
