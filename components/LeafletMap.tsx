@@ -21,15 +21,19 @@ function Recenter({ lat, lng }: { lat: number; lng: number }) {
   return null;
 }
 
-export default function LeafletMap({ lat, lng, zoom = 15 }: Props) {
-  useEffect(() => {
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: "/leaflet/marker-icon-2x.png",
-      iconUrl: "/leaflet/marker-icon.png",
-      shadowUrl: "/leaflet/marker-shadow.png",
-    });
-  }, []);
+// ✅ Custom marker icon
+const markerIcon = new L.Icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
 
+export default function LeafletMap({ lat, lng, zoom = 15 }: Props) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return (
       <div className="h-full w-full rounded-xl bg-gray-100 flex items-center justify-center">
@@ -52,7 +56,7 @@ export default function LeafletMap({ lat, lng, zoom = 15 }: Props) {
 
       <Recenter lat={lat} lng={lng} />
 
-      <Marker position={[lat, lng]}>
+      <Marker position={[lat, lng]} icon={markerIcon}>
         <Popup>Selected place</Popup>
       </Marker>
     </MapContainer>

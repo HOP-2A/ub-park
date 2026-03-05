@@ -18,11 +18,11 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/provider/authProvider";
 import { useUser } from "@clerk/nextjs";
 
-type Booking = {
+export type Booking = {
   id: string;
   startTime: string;
   endTime: string;
-  totalPrice: number;
+  totalAmount: number;
   status: string;
   parkingSpot: {
     id: string;
@@ -65,7 +65,7 @@ export default function BookingPage() {
   const [place, setPlace] = useState<Place | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedParkingId, setSelectedParkingId] = useState<string | null>(
-    null
+    null,
   );
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -178,7 +178,7 @@ export default function BookingPage() {
         {/* Time pickers + booking cards */}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Booking + Calendar */}
-          <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl border border-blue-100 animate-[slideUp_0.8s_ease-out] space-y-6">
+          <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl border border-slate-200 animate-[slideUp_0.8s_ease-out] space-y-6">
             {/* Calendar */}
             <div className="grid grid-cols-2 gap-4">
               <Calendar
@@ -207,7 +207,7 @@ export default function BookingPage() {
                     className={`border rounded-2xl p-4 flex flex-col justify-between ${
                       selectedParkingId === p.id
                         ? "bg-green-50 border-green-300"
-                        : "bg-white border-blue-100"
+                        : "bg-white border-slate-200"
                     }`}
                   >
                     <button
@@ -268,7 +268,7 @@ export default function BookingPage() {
           </div>
 
           {/* Stats */}
-          <div className="bg-white rounded-3xl p-6 shadow-xl border border-blue-100 animate-[slideUp_0.9s_ease-out] space-y-4">
+          <div className="bg-white rounded-3xl p-6 shadow-xl border border-slate-200 animate-[slideUp_0.9s_ease-out] space-y-4">
             <div className="flex items-center gap-2 text-blue-600 mb-4">
               <span className="text-sm font-semibold uppercase tracking-wider">
                 Parking lots
@@ -287,7 +287,7 @@ export default function BookingPage() {
               />
             </div>
 
-            <div className="rounded-2xl border border-blue-100 p-4 mt-4">
+            <div className="rounded-2xl border border-slate-200 p-4 mt-4">
               <div className="flex items-center justify-between">
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   Availability
