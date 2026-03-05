@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import {
   DndContext,
   DragEndEvent,
-  DragOverlay,
   DragStartEvent,
   MouseSensor,
   TouchSensor,
@@ -24,8 +23,7 @@ import {
   getParkingLayout,
   saveParkingLayout,
 } from "@/app/actions/parkingExtensions";
-import { useAuth, UserButton, useUser } from "@clerk/nextjs";
-import router from "next/router";
+
 type ParkingBuilderProps = {
   placeId: string;
 };
@@ -35,16 +33,11 @@ export function ParkingBuilder({ placeId }: ParkingBuilderProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
 
-  console.log(placeId, "dasds");
-
-  console.log(slots, "slotiin ym");
+  console.log(activeId);
+  console.log(selectedSlotId, "shit");
 
   const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: 10,
-      },
-    }),
+    useSensor(MouseSensor),
     useSensor(TouchSensor, {
       activationConstraint: {
         delay: 250,
@@ -106,7 +99,7 @@ export function ParkingBuilder({ placeId }: ParkingBuilderProps) {
 
   const deleteSlot = (id: string) => {
     setSlots((prev) => prev.filter((slot) => slot.id !== id));
-    if (selectedSlotId === id) setSelectedSlotId(null);
+    if (selectedSlotId === id) setSelectedSlotId(`${slots.length}`);
   };
 
   const handleSave = async () => {

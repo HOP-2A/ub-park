@@ -18,7 +18,6 @@ import {
   Users,
 } from "lucide-react";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { useAuth } from "@/provider/authProvider";
 import { useParams, useRouter } from "next/navigation";
 import { ParkingCanvas } from "@/components/admin/parking/ParkingCanvas";
 import { getParkingLayout } from "@/app/actions/parkingExtensions";
@@ -27,9 +26,9 @@ import { ParkingSlot } from "@/components/admin/parking/ParkingSlotTypes";
 export type parkingSpot = {
   id: string;
   name: string;
-  number: string;
-  pricePerHour: string;
-  isAvailable: boolean;
+  label: string;
+  PricePerHour: string;
+  status: string;
 };
 type CalendarDate = {
   day: string;
@@ -38,15 +37,30 @@ type CalendarDate = {
   isToday: boolean;
 };
 
+type Book = {
+  id: string;
+  userId: string;
+  slotId: string;
+  startTime: string;
+  endTime: string;
+  totalAmount: string;
+  status: string;
+  slot: {
+    id: string;
+    placeId: string;
+    status: string;
+    PricePerHour: string;
+  };
+};
+
 export default function Parking() {
-  const [view, setView] = useState("days");
   const [selectedDate, setSelectedDate] = useState();
   const [currParking, setCurrParking] = useState<parkingSpot[]>([]);
   const [parkingSpots, setParkingSpots] = useState<parkingSpot[]>([]);
+  const [b, setB] = useState<Book[]>([]);
   const [slots, setSlots] = useState<ParkingSlot[]>([]);
   const [dates, setDates] = useState<CalendarDate[]>([]);
   const { user: clerkUser, isLoaded } = useUser();
-  const { user } = useAuth(clerkUser?.id);
   const { placeId } = useParams();
   const router = useRouter();
 
@@ -58,8 +72,19 @@ export default function Parking() {
       setParkingSpots(data.message.parkings);
     };
     getplaces();
-  }, [isLoaded]);
-  // console.log(selectedDate.toLocaleDateString);
+  }, [isLoaded, placeId]);
+
+  useEffect(() => {
+    const getBookings = async () => {
+      const response = await fetch("/api/booking/place");
+      const data = await response.json();
+      setB(data);
+    };
+    getBookings();
+  }, []);
+
+  const myPlaceBooking = b.filter((item) => item.slot.placeId === placeId);
+  console.log(myPlaceBooking);
 
   const displayName =
     clerkUser?.fullName ||
@@ -70,7 +95,7 @@ export default function Parking() {
   useEffect(() => {
     const now = new Date();
     const currDate = new Date(now);
-    const generated = Array.from({ length: 14 }, (_, i) => {
+    const generated = Array.from({ length: 22 }, (_, i) => {
       const d = new Date(now);
 
       d.setDate(now.getDate() + i);
@@ -106,7 +131,7 @@ export default function Parking() {
     },
     {
       label: "Available",
-      value: "87",
+      value: `${parkingSpots.length}-${myPlaceBooking.length}`,
       icon: MapPin,
       color: "red",
       trend: "+5%",
@@ -322,7 +347,7 @@ export default function Parking() {
             ))}
           </div>
           {/* Map placeholder with enhanced design */}
-          <div className="relative bg-blue-900 rounded-3xl h-100 mb-8 flex items-center justify-center overflow-hidden shadow-2xl border-2 border-blue-500">
+          <div className="relative bg-blue-900 rounded-3xl h-150 mb-8 flex items-center justify-center overflow-hidden shadow-2xl border-2 border-blue-500">
             {/* Simple blue accent in corner */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 opacity-5 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600 opacity-5 rounded-full blur-3xl"></div>
@@ -355,7 +380,7 @@ export default function Parking() {
               </h2>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 flex flex-col overflow-y-auto">
               {parkingSpots.map((spot, index) => (
                 <div
                   key={index}
@@ -366,17 +391,17 @@ export default function Parking() {
                       {/* Spot ID */}
                       <div className="w-15 h-15 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform duration-300">
                         <span className="text-3xl font-bold text-white">
-                          {spot.number}
+                          {spot.label.split(" ")[1]}
                         </span>
                       </div>
 
                       {/* Spot Info */}
                       <div className="flex-1">
                         <h3 className="text-xl font-bold text-slate-900 mb-1">
-                          {spot.number} parking spot
+                          {spot.label.split(" ")[1]} parking spot
                         </h3>
                         <div className="flex items-center gap-4">
-                          {spot.isAvailable === true ? (
+                          {spot.status === "AVAILABLE" ? (
                             <div className="flex items-center gap-1.5">
                               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                               <span className="text-sm font-semibold text-slate-700">
@@ -397,7 +422,7 @@ export default function Parking() {
                       {/* Price */}
                       <div className="text-center px-6 py-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
                         <p className="text-2xl font-bold text-blue-600">
-                          {spot.pricePerHour}$
+                          {spot.PricePerHour}$
                         </p>
                         <p className="text-xs text-slate-500 font-medium">
                           per hour
