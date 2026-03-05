@@ -19,9 +19,12 @@ import {
 } from "lucide-react";
 import { UserButton, useUser } from "@clerk/nextjs";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { useAuth } from "@/provider/authProvider";
 =======
 >>>>>>> 7f7501f930fb33b517f34313170c012151e4c83e
+=======
+>>>>>>> 7f7501f (barag duuslaaa ajildag ym ihtei bolloo)
 import { useParams, useRouter } from "next/navigation";
 import { ParkingCanvas } from "@/components/admin/parking/ParkingCanvas";
 import { getParkingLayout } from "@/app/actions/parkingExtensions";
@@ -77,9 +80,12 @@ export default function Parking() {
     };
     getplaces();
 <<<<<<< HEAD
+<<<<<<< HEAD
   }, [isLoaded]);
   // console.log(selectedDate.toLocaleDateString);
 =======
+=======
+>>>>>>> 7f7501f (barag duuslaaa ajildag ym ihtei bolloo)
   }, [isLoaded, placeId]);
 
   useEffect(() => {
@@ -93,7 +99,10 @@ export default function Parking() {
 
   const myPlaceBooking = b.filter((item) => item.slot.placeId === placeId);
   console.log(myPlaceBooking);
+<<<<<<< HEAD
 >>>>>>> 7f7501f930fb33b517f34313170c012151e4c83e
+=======
+>>>>>>> 7f7501f (barag duuslaaa ajildag ym ihtei bolloo)
 
   const displayName =
     clerkUser?.fullName ||
@@ -105,10 +114,14 @@ export default function Parking() {
     const now = new Date();
     const currDate = new Date(now);
 <<<<<<< HEAD
+<<<<<<< HEAD
     const generated = Array.from({ length: 14 }, (_, i) => {
 =======
     const generated = Array.from({ length: 22 }, (_, i) => {
 >>>>>>> 7f7501f930fb33b517f34313170c012151e4c83e
+=======
+    const generated = Array.from({ length: 22 }, (_, i) => {
+>>>>>>> 7f7501f (barag duuslaaa ajildag ym ihtei bolloo)
       const d = new Date(now);
 
       d.setDate(now.getDate() + i);
@@ -361,10 +374,14 @@ export default function Parking() {
           </div>
           {/* Map placeholder with enhanced design */}
 <<<<<<< HEAD
+<<<<<<< HEAD
           <div className="relative bg-blue-900 rounded-3xl h-100 mb-8 flex items-center justify-center overflow-hidden shadow-2xl border-2 border-blue-500">
 =======
           <div className="relative bg-blue-900 rounded-3xl h-150 mb-8 flex items-center justify-center overflow-hidden shadow-2xl border-2 border-blue-500">
 >>>>>>> 7f7501f930fb33b517f34313170c012151e4c83e
+=======
+          <div className="relative bg-blue-900 rounded-3xl h-150 mb-8 flex items-center justify-center overflow-hidden shadow-2xl border-2 border-blue-500">
+>>>>>>> 7f7501f (barag duuslaaa ajildag ym ihtei bolloo)
             {/* Simple blue accent in corner */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 opacity-5 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600 opacity-5 rounded-full blur-3xl"></div>

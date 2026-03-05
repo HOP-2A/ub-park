@@ -23,14 +23,7 @@ import {
   getParkingLayout,
   saveParkingLayout,
 } from "@/app/actions/parkingExtensions";
-import { useAuth, UserButton, useUser } from "@clerk/nextjs";
-import router from "next/router";
-<<<<<<< HEAD
-import { useAuth, UserButton, useUser } from "@clerk/nextjs";
-import router from "next/router";
-=======
 
->>>>>>> 7f7501f930fb33b517f34313170c012151e4c83e
 type ParkingBuilderProps = {
   placeId: string;
 };
@@ -42,14 +35,11 @@ export function ParkingBuilder({ placeId }: ParkingBuilderProps) {
 
 <<<<<<< HEAD
 
-  console.log(placeId, "dasds");
-=======
->>>>>>> 7f7501f930fb33b517f34313170c012151e4c83e
-
   console.log(activeId);
   console.log(selectedSlotId, "shit");
 
   const sensors = useSensors(
+    useSensor(MouseSensor),
     useSensor(MouseSensor),
     useSensor(TouchSensor, {
       activationConstraint: {
@@ -112,6 +102,7 @@ export function ParkingBuilder({ placeId }: ParkingBuilderProps) {
 
   const deleteSlot = (id: string) => {
     setSlots((prev) => prev.filter((slot) => slot.id !== id));
+    if (selectedSlotId === id) setSelectedSlotId(`${slots.length}`);
     if (selectedSlotId === id) setSelectedSlotId(`${slots.length}`);
   };
 

@@ -5,24 +5,14 @@ import { ParkingSlot } from "./ParkingSlotTypes";
 
 interface ParkingCanvasProps {
   slots: ParkingSlot[];
-<<<<<<< HEAD
-  setSelectedParkingId: Dispatch<SetStateAction<string | null>>;
-  selectedParkingId: Dispatch<SetStateAction<string | null>>;
-=======
   setSelectedSlotId: Dispatch<SetStateAction<string | null>>;
   selectedSlotId: Dispatch<SetStateAction<string | null>>;
->>>>>>> 7f7501f930fb33b517f34313170c012151e4c83e
 }
 
 export function ParkingCanvas({
   slots,
-<<<<<<< HEAD
-  setSelectedParkingId,
-  selectedParkingId,
-=======
   setSelectedSlotId,
   selectedSlotId,
->>>>>>> 7f7501f930fb33b517f34313170c012151e4c83e
 }: ParkingCanvasProps) {
   const { setNodeRef } = useDroppable({
     id: "canvas",
@@ -42,13 +32,8 @@ export function ParkingCanvas({
         <DraggableSlot
           key={slot.id}
           slot={slot}
-<<<<<<< HEAD
-          setSelectedParkingId={setSelectedParkingId}
-          selectedParkingId={selectedParkingId}
-=======
           setSelectedSlotId={setSelectedSlotId}
           selectedSlotId={selectedSlotId}
->>>>>>> 7f7501f930fb33b517f34313170c012151e4c83e
         />
       ))}
     </div>
