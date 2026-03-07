@@ -60,8 +60,7 @@ export function DraggableSlot({
         selected && "border-2 border-blue-500",
       )}
       {...listeners}
-      {...attributes}
-    >
+      {...attributes}>
       <div className="absolute top-1 left-1/2 -translate-x-1/2">
         <Car className="h-4 w-4 text-slate-600" />
       </div>

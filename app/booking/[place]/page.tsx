@@ -45,14 +45,6 @@ type Place = {
   parkings?: Parking[];
 };
 
-export type parkingSpot = {
-  id: string;
-  name: string;
-  number: string;
-  pricePerHour: string;
-  isAvailable: boolean;
-};
-
 export default function BookingPage() {
   const params = useParams<{ place: string }>();
   const placeId = params.place;
@@ -256,8 +248,7 @@ export default function BookingPage() {
             <Button
               onClick={createBooking}
               disabled={loading || !selectedParkingId}
-              className="relative w-full group overflow-hidden mt-4"
-            >
+              className="relative w-full group overflow-hidden mt-4">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600 rounded-2xl transition-all duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-sky-300 to-blue-400 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
               <div className="relative px-8 py-5 flex items-center justify-center gap-3 text-white font-bold text-lg">
