@@ -20,17 +20,18 @@ import {
 import { UserButton, useUser } from "@clerk/nextjs";
 import { useAuth } from "@/provider/authProvider";
 import { placetype } from "@/app/page";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ParkingCanvas } from "@/components/admin/parking/ParkingCanvas";
 import { getParkingLayout } from "@/app/actions/parkingExtensions";
 import { ParkingSlot } from "@/components/admin/parking/ParkingSlotTypes";
+import { Sidebar } from "@/app/_components/Sidebar";
 
 export type parkingSpot = {
   id: string;
   name: string;
-  number: string;
-  pricePerHour: string;
-  isAvailable: boolean;
+  label: string;
+  PricePerHour: string;
+  status: string;
 };
 type CalendarDate = {
   day: string;
@@ -38,17 +39,34 @@ type CalendarDate = {
   month: string;
   isToday: boolean;
 };
+type Book = {
+  id: string;
+  userId: string;
+  slotId: string;
+  startTime: string;
+  endTime: string;
+  totalAmount: string;
+  status: string;
+  slot: {
+    id: string;
+    placeId: string;
+    status: string;
+    PricePerHour: string;
+  };
+};
 
 export default function Parking() {
   const [view, setView] = useState("days");
   const [selectedDate, setSelectedDate] = useState();
   const [currParking, setCurrParking] = useState<parkingSpot[]>([]);
   const [parkingSpots, setParkingSpots] = useState<parkingSpot[]>([]);
+  const [b, setB] = useState<Book[]>([]);
   const [slots, setSlots] = useState<ParkingSlot[]>([]);
   const [dates, setDates] = useState<CalendarDate[]>([]);
   const { user: clerkUser, isLoaded } = useUser();
   const { user } = useAuth(clerkUser?.id);
   const { placeId } = useParams();
+  const router = useRouter();
 
   useEffect(() => {
     const getplaces = async () => {
@@ -65,7 +83,7 @@ export default function Parking() {
   useEffect(() => {
     const now = new Date();
     const currDate = new Date(now);
-    const generated = Array.from({ length: 13 }, (_, i) => {
+    const generated = Array.from({ length: 22 }, (_, i) => {
       const d = new Date(now);
 
       d.setDate(now.getDate() + i);
@@ -81,6 +99,19 @@ export default function Parking() {
     setDates(generated);
     setSelectedDate(currDate);
   }, []);
+
+  useEffect(() => {
+    const getBookings = async () => {
+      const response = await fetch("/api/booking/place");
+      const data = await response.json();
+      setB(data);
+    };
+    getBookings();
+  }, []);
+
+  const myPlaceBooking = b.filter((item) => item.slot.placeId === placeId);
+  console.log(myPlaceBooking);
+
   useEffect(() => {
     const load = async () => {
       const loadedSlots = await getParkingLayout(`${placeId}`);
@@ -116,7 +147,7 @@ export default function Parking() {
       label: "Revenue",
       value: "$24,700",
       icon: DollarSign,
-      color: "purple",
+      color: "blue",
       trend: "+18%",
     },
     {
@@ -131,119 +162,7 @@ export default function Parking() {
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 font-sans">
       {/* Sidebar */}
-      <aside className="w-72 bg-white/80 backdrop-blur-xl border-r border-slate-200/60 flex flex-col shadow-xl">
-        {/* Logo */}
-        <div className="p-6 border-b border-slate-200/60">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <MapPin className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                UBPARK
-              </span>
-              <p className="text-xs text-slate-500">Smart Parking</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 p-4 overflow-y-auto">
-          <div className="mb-6">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-4">
-              Main Menu
-            </p>
-            <ul className="space-y-1">
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center gap-3 px-4 py-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all duration-200 group"
-                >
-                  <BarChart3 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  <span className="font-medium">Dashboard</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center gap-3 px-4 py-3 text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl shadow-lg shadow-blue-500/30 transition-all duration-200"
-                >
-                  <Calendar className="w-5 h-5" />
-                  <span className="font-medium">Parking</span>
-                  <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
-                </a>
-              </li>
-              <li>
-                <button className="flex items-center justify-between w-full px-4 py-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all duration-200 group">
-                  <div className="flex items-center gap-3">
-                    <BarChart3 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    <span className="font-medium">Reports</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </li>
-              <li>
-                <button className="flex items-center justify-between w-full px-4 py-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all duration-200 group">
-                  <div className="flex items-center gap-3">
-                    <Settings className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-                    <span className="font-medium">Settings</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 px-4">
-              Quick Actions
-            </p>
-            <ul className="space-y-1">
-              <li>
-                <a
-                  href="#"
-                  className="flex items-center gap-3 px-4 py-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all duration-200"
-                >
-                  <Users className="w-5 h-5" />
-                  <span className="font-medium text-sm">My Bookings</span>
-                </a>
-              </li>
-            </ul>
-          </div> */}
-        </nav>
-
-        {/* Bottom section */}
-        <div className="p-4 border-t border-slate-200/60 space-y-2">
-          <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 cursor-pointer transition-all duration-200 group">
-            <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center">
-                <Bell className="w-5 h-5 text-white" />
-              </div>
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold shadow-lg">
-                2
-              </span>
-            </div>
-            <div className="flex-1">
-              <span className="text-sm font-semibold text-slate-700">
-                Notifications
-              </span>
-              <p className="text-xs text-slate-500">2 new alerts</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 mt-2 rounded-2xl bg-white border border-slate-200">
-            <UserButton />
-            <div className="min-w-0">
-              <div className="text-sm font-semibold text-slate-900 truncate">
-                {displayName}
-              </div>
-              <div className="text-xs text-slate-500 truncate">
-                {clerkUser?.primaryEmailAddress?.emailAddress ?? ""}
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
+      <Sidebar placeId={placeId} />
 
       {/* Main content */}
       <main className="flex-1 flex flex-col overflow-hidden">
@@ -258,19 +177,6 @@ export default function Parking() {
                 Book parking spots near you
               </p>
             </div>
-            {/* <div className="flex items-center gap-3">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search locations..."
-                  className="pl-12 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-80 bg-white shadow-sm"
-                />
-              </div>
-              <button className="p-3 border border-slate-300 rounded-xl hover:bg-slate-100 transition-colors bg-white shadow-sm">
-                <Filter className="w-5 h-5 text-slate-600" />
-              </button>
-            </div> */}
           </div>
         </header>
 
@@ -280,12 +186,10 @@ export default function Parking() {
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-white/80 backdrop-blur-xl rounded-2xl p-5 border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
-              >
+                className="bg-white/80 backdrop-blur-xl rounded-2xl p-5 border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer">
                 <div className="flex items-start justify-between mb-3">
                   <div
-                    className={`w-12 h-12 bg-gradient-to-br from-${stat.color}-500 to-${stat.color}-600 rounded-xl flex items-center justify-center shadow-lg shadow-${stat.color}-500/30 group-hover:scale-110 transition-transform duration-300`}
-                  >
+                    className={`w-12 h-12 bg-gradient-to-br from-${stat.color}-500 to-${stat.color}-600 rounded-xl flex items-center justify-center shadow-lg shadow-${stat.color}-500/30 group-hover:scale-110 transition-transform duration-300`}>
                     <stat.icon className="w-6 h-6 text-white" />
                   </div>
                   <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-lg">
@@ -302,38 +206,7 @@ export default function Parking() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-auto px-8 py-6">
-          {/* View toggle */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="inline-flex bg-white/80 backdrop-blur-xl rounded-xl p-1.5 border border-slate-200/60 shadow-sm">
-              <button
-                onClick={() => setView("days")}
-                className={`px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
-                  view === "days"
-                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                }`}
-              >
-                Days
-              </button>
-              <button
-                onClick={() => setView("weeks")}
-                className={`px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
-                  view === "weeks"
-                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                }`}
-              >
-                Weeks
-              </button>
-            </div>
-
-            {/* <div className="flex items-center gap-2 text-sm text-slate-600">
-              <Clock className="w-4 h-4" />
-              <span>Updated 2 mins ago</span>
-            </div> */}
-          </div>
-
+        <div className="flex-1  px-8 py-6 overflow-auto">
           {/* Calendar dates */}
           <div className="flex gap-2 mb-8 overflow-x-auto pb-4">
             {dates.map((item, index) => (
@@ -344,8 +217,7 @@ export default function Parking() {
                   selectedDate === item.day
                     ? "border-blue-600 bg-blue-50"
                     : "border-gray-200 bg-white hover:border-gray-300"
-                }`}
-              >
+                }`}>
                 <span className="text-xs text-gray-500 font-medium mb-1">
                   {item.weekday}
                 </span>
@@ -354,8 +226,7 @@ export default function Parking() {
                     selectedDate === item.day
                       ? "text-blue-600"
                       : "text-gray-900"
-                  }`}
-                >
+                  }`}>
                   {item.day}
                 </span>
                 <span className="text-xs text-gray-400">{item.month}</span>
@@ -376,8 +247,7 @@ export default function Parking() {
                   backgroundImage:
                     "linear-gradient(rgb(59,130,246) 1px, transparent 1px), linear-gradient(90deg, rgb(59,130,246) 1px, transparent 1px)",
                   backgroundSize: "40px 40px",
-                }}
-              ></div>
+                }}></div>
             </div>
 
             <ParkingCanvas slots={slots} />
@@ -401,24 +271,23 @@ export default function Parking() {
               {parkingSpots.map((spot, index) => (
                 <div
                   key={index}
-                  className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 hover:shadow-xl transition-all duration-300 group"
-                >
+                  className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 hover:shadow-xl transition-all duration-300 group">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-6 flex-1">
                       {/* Spot ID */}
                       <div className="w-15 h-15 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform duration-300">
                         <span className="text-3xl font-bold text-white">
-                          {spot.number}
+                          {spot.label.split(" ")[1]}
                         </span>
                       </div>
 
                       {/* Spot Info */}
                       <div className="flex-1">
                         <h3 className="text-xl font-bold text-slate-900 mb-1">
-                          {spot.number} parking spot
+                          {spot.label.split(" ")[1]} parking spot
                         </h3>
                         <div className="flex items-center gap-4">
-                          {spot.isAvailable === true ? (
+                          {spot.status === "AVAILABLE" ? (
                             <div className="flex items-center gap-1.5">
                               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                               <span className="text-sm font-semibold text-slate-700">
@@ -439,7 +308,7 @@ export default function Parking() {
                       {/* Price */}
                       <div className="text-center px-6 py-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
                         <p className="text-2xl font-bold text-blue-600">
-                          {spot.pricePerHour}$
+                          {spot.PricePerHour}$
                         </p>
                         <p className="text-xs text-slate-500 font-medium">
                           per hour
