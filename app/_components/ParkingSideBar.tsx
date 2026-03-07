@@ -11,7 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 
 export const ParkingSidebar = (placeId: any) => {
-  const { user: clerkUser, isLoaded } = useUser();
+  const { user: clerkUser } = useUser();
   const router = useRouter();
 
   console.log(placeId.placeId, "plce");

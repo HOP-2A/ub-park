@@ -3,7 +3,6 @@ import { useDraggable } from "@dnd-kit/core";
 import { ParkingSlot } from "./ParkingSlotTypes";
 import { cn } from "@/lib/utils";
 import { Car } from "lucide-react";
-import { stringify } from "querystring";
 
 interface DraggableSlotProps {
   slot: ParkingSlot;
@@ -60,7 +59,8 @@ export function DraggableSlot({
         selected && "border-2 border-blue-500",
       )}
       {...listeners}
-      {...attributes}>
+      {...attributes}
+    >
       <div className="absolute top-1 left-1/2 -translate-x-1/2">
         <Car className="h-4 w-4 text-slate-600" />
       </div>

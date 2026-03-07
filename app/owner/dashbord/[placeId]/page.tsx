@@ -1,26 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import {
-  Calendar,
-  BarChart3,
-  Settings,
-  Bell,
-  Star,
-  ChevronRight,
-  MapPin,
-  Search,
-  Filter,
-  Clock,
-  DollarSign,
-  Car,
-  TrendingUp,
-  Users,
-} from "lucide-react";
-import { UserButton, useUser } from "@clerk/nextjs";
-import { useAuth } from "@/provider/authProvider";
-import { placetype } from "@/app/page";
-import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Star, MapPin, DollarSign, Car, TrendingUp } from "lucide-react";
+
+import { useParams } from "next/navigation";
 import { ParkingCanvas } from "@/components/admin/parking/ParkingCanvas";
 import { getParkingLayout } from "@/app/actions/parkingExtensions";
 import { ParkingSlot } from "@/components/admin/parking/ParkingSlotTypes";
@@ -39,7 +22,7 @@ type CalendarDate = {
   month: string;
   isToday: boolean;
 };
-type Book = {
+export type Book = {
   id: string;
   userId: string;
   slotId: string;
@@ -56,17 +39,14 @@ type Book = {
 };
 
 export default function Parking() {
-  const [view, setView] = useState("days");
   const [selectedDate, setSelectedDate] = useState();
   const [currParking, setCurrParking] = useState<parkingSpot[]>([]);
   const [parkingSpots, setParkingSpots] = useState<parkingSpot[]>([]);
+  // const [selectSlot, setSelectedSlot] = useState<parkingSpot[]>([]);
   const [b, setB] = useState<Book[]>([]);
   const [slots, setSlots] = useState<ParkingSlot[]>([]);
   const [dates, setDates] = useState<CalendarDate[]>([]);
-  const { user: clerkUser, isLoaded } = useUser();
-  const { user } = useAuth(clerkUser?.id);
   const { placeId } = useParams();
-  const router = useRouter();
 
   useEffect(() => {
     const getplaces = async () => {
@@ -76,9 +56,7 @@ export default function Parking() {
       setParkingSpots(data.message.parkings);
     };
     getplaces();
-  }, [isLoaded]);
-  console.log(parkingSpots, "daddsadsas");
-  console.log(slots, "sdafasdgfshgfdhgda");
+  }, [placeId]);
 
   useEffect(() => {
     const now = new Date();
@@ -100,17 +78,13 @@ export default function Parking() {
     setSelectedDate(currDate);
   }, []);
 
-  useEffect(() => {
-    const getBookings = async () => {
-      const response = await fetch("/api/booking/place");
-      const data = await response.json();
-      setB(data);
-    };
-    getBookings();
-  }, []);
+  const getBookings = async (slotId: string) => {
+    const response = await fetch(`/api/booking/ownerSide/${slotId}`);
+    const data = await response.json();
+    setB(data.message[0]);
+  };
 
-  const myPlaceBooking = b.filter((item) => item.slot.placeId === placeId);
-  console.log(myPlaceBooking);
+  console.log(b, "boookkkk");
 
   useEffect(() => {
     const load = async () => {
@@ -121,12 +95,6 @@ export default function Parking() {
     };
     load();
   }, [placeId]);
-
-  const displayName =
-    clerkUser?.fullName ||
-    clerkUser?.username ||
-    clerkUser?.primaryEmailAddress?.emailAddress ||
-    "User";
 
   const stats = [
     {
@@ -186,10 +154,12 @@ export default function Parking() {
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-white/80 backdrop-blur-xl rounded-2xl p-5 border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer">
+                className="bg-white/80 backdrop-blur-xl rounded-2xl p-5 border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+              >
                 <div className="flex items-start justify-between mb-3">
                   <div
-                    className={`w-12 h-12 bg-gradient-to-br from-${stat.color}-500 to-${stat.color}-600 rounded-xl flex items-center justify-center shadow-lg shadow-${stat.color}-500/30 group-hover:scale-110 transition-transform duration-300`}>
+                    className={`w-12 h-12 bg-gradient-to-br from-${stat.color}-500 to-${stat.color}-600 rounded-xl flex items-center justify-center shadow-lg shadow-${stat.color}-500/30 group-hover:scale-110 transition-transform duration-300`}
+                  >
                     <stat.icon className="w-6 h-6 text-white" />
                   </div>
                   <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-lg">
@@ -217,7 +187,8 @@ export default function Parking() {
                   selectedDate === item.day
                     ? "border-blue-600 bg-blue-50"
                     : "border-gray-200 bg-white hover:border-gray-300"
-                }`}>
+                }`}
+              >
                 <span className="text-xs text-gray-500 font-medium mb-1">
                   {item.weekday}
                 </span>
@@ -226,7 +197,8 @@ export default function Parking() {
                     selectedDate === item.day
                       ? "text-blue-600"
                       : "text-gray-900"
-                  }`}>
+                  }`}
+                >
                   {item.day}
                 </span>
                 <span className="text-xs text-gray-400">{item.month}</span>
@@ -247,7 +219,8 @@ export default function Parking() {
                   backgroundImage:
                     "linear-gradient(rgb(59,130,246) 1px, transparent 1px), linear-gradient(90deg, rgb(59,130,246) 1px, transparent 1px)",
                   backgroundSize: "40px 40px",
-                }}></div>
+                }}
+              ></div>
             </div>
 
             <ParkingCanvas slots={slots} />
@@ -271,7 +244,11 @@ export default function Parking() {
               {parkingSpots.map((spot, index) => (
                 <div
                   key={index}
-                  className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 hover:shadow-xl transition-all duration-300 group">
+                  className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 hover:shadow-xl transition-all duration-300 group"
+                  onClick={() => {
+                    getBookings(spot.id);
+                  }}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-6 flex-1">
                       {/* Spot ID */}
