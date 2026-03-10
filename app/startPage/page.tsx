@@ -208,13 +208,25 @@ export default function StartPage() {
           {/* Footer */}
           <div className="mt-8 text-center text-slate-500 text-sm">
             By continuing, you agree to our{" "}
-            <span className="text-blue-600 cursor-pointer hover:underline">
+            <span
+              className="text-blue-600 cursor-pointer hover:underline"
+              onClick={() => push("/terms")}
+            >
               Terms
             </span>{" "}
             and{" "}
-            <span className="text-blue-600 cursor-pointer hover:underline">
+            <span
+              className="text-blue-600 cursor-pointer hover:underline"
+              onClick={() => push("/privacy")}
+            >
               Privacy Policy
             </span>
+          </div>
+          <div
+            className="text-blue-600 cursor-pointer hover:underline"
+            onClick={() => push("/credits")}
+          >
+            CREDITS
           </div>
         </div>
 
