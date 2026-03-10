@@ -7,7 +7,7 @@ import { Car } from "lucide-react";
 interface DraggableSlotProps {
   slot: ParkingSlot;
   setSelectedParkingId: Dispatch<SetStateAction<string | null>>;
-  selectedParkingId: Dispatch<SetStateAction<string | null>>;
+  selectedParkingId: string | null;
 }
 
 export function DraggableSlot({

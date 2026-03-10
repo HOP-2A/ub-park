@@ -175,10 +175,15 @@ export default function BookingPage() {
             <div className="grid grid-cols-2 gap-4">
               <Calendar
                 label="Start"
-                value={startTime}
-                onChange={setStartTime}
+                value={startTime ? new Date(startTime) : undefined}
+                onChange={(date) => setStartTime(date.toISOString())}
               />
-              <Calendar label="End" value={endTime} onChange={setEndTime} />
+
+              <Calendar
+                label="End"
+                value={endTime ? new Date(endTime) : undefined}
+                onChange={(date) => setEndTime(date.toISOString())}
+              />
             </div>
             <div>
               {" "}

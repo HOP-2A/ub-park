@@ -8,6 +8,7 @@ import { ParkingCanvas } from "@/components/admin/parking/ParkingCanvas";
 import { getParkingLayout } from "@/app/actions/parkingExtensions";
 import { ParkingSlot } from "@/components/admin/parking/ParkingSlotTypes";
 import { Sidebar } from "@/app/_components/Sidebar";
+import { placetype } from "@/app/page";
 
 export type parkingSpot = {
   id: string;
@@ -16,6 +17,7 @@ export type parkingSpot = {
   PricePerHour: string;
   status: string;
 };
+
 type CalendarDate = {
   day: string;
   weekday: string;
@@ -39,10 +41,12 @@ export type Book = {
 };
 
 export default function Parking() {
-  const [selectedDate, setSelectedDate] = useState();
-  const [currParking, setCurrParking] = useState<parkingSpot[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [currParking, setCurrParking] = useState<placetype | null>(null);
   const [parkingSpots, setParkingSpots] = useState<parkingSpot[]>([]);
-  // const [selectSlot, setSelectedSlot] = useState<parkingSpot[]>([]);
+  const [selectedParkingId, setSelectedParkingId] = useState<string | null>(
+    null,
+  );
   const [b, setB] = useState<Book[]>([]);
   const [slots, setSlots] = useState<ParkingSlot[]>([]);
   const [dates, setDates] = useState<CalendarDate[]>([]);
@@ -75,7 +79,7 @@ export default function Parking() {
     });
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDates(generated);
-    setSelectedDate(currDate);
+    setSelectedDate(currDate.toDateString());
   }, []);
 
   const getBookings = async (slotId: string) => {
@@ -139,7 +143,7 @@ export default function Parking() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-slate-900 mb-1">
-                {currParking.name}
+                {currParking?.name}
               </h1>
               <p className="text-sm text-slate-500">
                 Book parking spots near you
@@ -223,7 +227,11 @@ export default function Parking() {
               ></div>
             </div>
 
-            <ParkingCanvas slots={slots} />
+            <ParkingCanvas
+              slots={slots}
+              selectedParkingId={selectedParkingId}
+              setSelectedParkingId={setSelectedParkingId}
+            />
 
             {/* Corner indicators */}
             <div className="absolute top-4 left-4 w-2 h-2 bg-blue-500 rounded-full"></div>
