@@ -7,8 +7,6 @@ import {
   Building2,
   MapPin,
   Map as MapIcon,
-  ParkingCircle,
-  CheckCircle2,
   ArrowRight,
   SquareParking,
 } from "lucide-react";
@@ -39,7 +37,7 @@ export default function PlaceDetailsPage() {
   const { push } = useRouter();
   const params = useParams();
   const placeId = params.placeId as string;
-
+  const [width, setWidth] = useState(0);
   const [place, setPlace] = useState<Place | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -86,9 +84,16 @@ export default function PlaceDetailsPage() {
     return place?.parkings.filter((p) => p.isAvailable).length ?? 0;
   }, [place]);
 
+  useEffect(() => {
+    setWidth(window.innerWidth);
+  }, []);
+
   const totalCount = place?.parkings.length ?? 0;
   const availabilityPct =
     totalCount > 0 ? Math.round((availableCount / totalCount) * 100) : 0;
+  if (typeof window !== "undefined") {
+    console.log(window.location.href);
+  }
 
   if (loading) {
     return (
@@ -148,7 +153,7 @@ export default function PlaceDetailsPage() {
           </div>
           <h1 className="text-3xl font-bold text-slate-900">Place not found</h1>
           <p className="mt-2 text-slate-500">
-            This parking location doesn’t exist or was removed.
+            This parking location does not exist or was removed.
           </p>
 
           <div className="mt-6 flex items-center justify-center gap-3">
@@ -328,29 +333,29 @@ export default function PlaceDetailsPage() {
     </div>
   );
 
-  function StatCard({
-    icon,
-    label,
-    value,
-  }: {
-    icon: React.ReactNode;
-    label: string;
-    value: string;
-  }) {
-    return (
-      <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-        <div className="flex items-center gap-2 text-slate-500">
-          <span className="text-blue-500">{icon}</span>
+  // function StatCard({
+  //   icon,
+  //   label,
+  //   value,
+  // }: {
+  //   icon: React.ReactNode;
+  //   label: string;
+  //   value: string;
+  // }) {
+  //   return (
+  //     <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+  //       <div className="flex items-center gap-2 text-slate-500">
+  //         <span className="text-blue-500">{icon}</span>
 
-          <div className="text-xs uppercase tracking-wider font-semibold">
-            {label}
-          </div>
-        </div>
+  //         <div className="text-xs uppercase tracking-wider font-semibold">
+  //           {label}
+  //         </div>
+  //       </div>
 
-        <div className="mt-2 text-2xl font-bold text-slate-900">{value}</div>
-      </div>
-    );
-  }
+  //       <div className="mt-2 text-2xl font-bold text-slate-900">{value}</div>
+  //     </div>
+  //   );
+  // }
 
   function SparkHeaderIcon() {
     return (

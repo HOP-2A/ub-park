@@ -2,7 +2,6 @@
 import { UserButton, useUser } from "@clerk/nextjs";
 import {
   MapPin,
-  Calendar,
   BarChart3,
   ChevronRight,
   Settings,
@@ -12,7 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 
 export const Sidebar = (placeId: any) => {
-  const { user: clerkUser, isLoaded } = useUser();
+  const { user: clerkUser } = useUser();
   const router = useRouter();
 
   console.log(placeId.placeId, "plce");
@@ -49,7 +48,8 @@ export const Sidebar = (placeId: any) => {
             <li
               onClick={() => {
                 router.push(`/owner/dashbord/${placeId.placeId}`);
-              }}>
+              }}
+            >
               <button className="flex items-center justify-between w-full px-4 py-3 text-slate-600 text-white rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:bg-slate-100 transition-all duration-200 group">
                 <div className="flex items-center gap-3">
                   <SquareParking className="w-5 h-5 group-hover:rotate-360 group-hover:scale-110 transition-transform duration-700" />
@@ -70,7 +70,8 @@ export const Sidebar = (placeId: any) => {
             <li
               onClick={() => {
                 router.push(`/owner/dashbord/${placeId.placeId}/parking`);
-              }}>
+              }}
+            >
               <button className="flex items-center justify-between w-full px-4 py-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all duration-200 group">
                 <div className="flex items-center gap-3">
                   <Settings className="w-5 h-5 group-hover:rotate-360 transition-transform duration-900" />
@@ -90,7 +91,8 @@ export const Sidebar = (placeId: any) => {
             className="space-y-1"
             onClick={() => {
               router.push("/owner/dashbord");
-            }}>
+            }}
+          >
             <li>
               <button className="flex items-center justify-between w-full px-4 py-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all duration-200 group">
                 <div className="flex items-center gap-3">

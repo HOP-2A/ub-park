@@ -6,7 +6,7 @@ import { ParkingSlot } from "./ParkingSlotTypes";
 interface ParkingCanvasProps {
   slots: ParkingSlot[];
   setSelectedParkingId: Dispatch<SetStateAction<string | null>>;
-  selectedParkingId: Dispatch<SetStateAction<string | null>>;
+  selectedParkingId: string | null;
 }
 
 export function ParkingCanvas({

@@ -14,7 +14,7 @@ import { useAuth } from "@/provider/authProvider";
 
 // ✅ Leaflet + react-leaflet
 import "leaflet/dist/leaflet.css";
-import * as L from "leaflet";
+import L from "leaflet";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 
 // ✅ Fix default marker icon paths in Next.js
@@ -50,7 +50,6 @@ export default function AddParkingLot() {
   const [focusedField, setFocusedField] = useState("");
   const { user: clerkUser } = useUser();
   const { user } = useAuth(clerkUser?.id);
-
   const [form, setForm] = useState({
     name: "",
     address: "",
@@ -116,6 +115,7 @@ export default function AddParkingLot() {
       form.latitude !== "" &&
       form.longitude !== ""
     ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPicked({ lat, lng });
     }
   }, [form.latitude, form.longitude]);
@@ -302,8 +302,9 @@ export default function AddParkingLot() {
                       zoom={13}
                       scrollWheelZoom
                       className="h-full w-full"
-                      whenReady={(e) => {
-                        mapRef.current = e.target;
+                      ref={mapRef} // <-- assign the map ref directly
+                      whenReady={() => {
+                        console.log("Map is ready", mapRef.current);
                       }}
                     >
                       <TileLayer

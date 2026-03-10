@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import {
   DndContext,
   DragEndEvent,
-  DragOverlay,
   DragStartEvent,
   MouseSensor,
   TouchSensor,
@@ -32,6 +31,8 @@ export function ParkingBuilder({ placeId }: ParkingBuilderProps) {
   const [slots, setSlots] = useState<ParkingSlot[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
+
+  console.log(activeId);
 
   const sensors = useSensors(
     useSensor(MouseSensor),
@@ -72,7 +73,7 @@ export function ParkingBuilder({ placeId }: ParkingBuilderProps) {
     setActiveId(null);
   };
 
-  const addSlot = (type: ParkingSlot[]) => {
+  const addSlot = (type: "CAR") => {
     const newSlot: ParkingSlot = {
       id: uuidv4(),
       label: `Slot ${slots.length + 1}`,
@@ -140,7 +141,11 @@ export function ParkingBuilder({ placeId }: ParkingBuilderProps) {
             </Button>
             <ParkingToolbar onAddCheck={addSlot} />
           </div>
-          <ParkingCanvas slots={slots} />
+          <ParkingCanvas
+            slots={slots}
+            selectedParkingId={selectedSlotId}
+            setSelectedParkingId={setSelectedSlotId}
+          />
         </div>
 
         {/* Right Properties Panel */}

@@ -1,4 +1,4 @@
-import { LayoutViewer } from "@/components/client/parking/LayoutViewer";
+// import { LayoutViewer } from "@/components/client/parking/LayoutViewer";
 
 export default function ParkingPage() {
   return (
@@ -10,7 +10,7 @@ export default function ParkingPage() {
         </p>
       </div>
       <div className="flex-1 border rounded-lg overflow-hidden relative shadow-sm h-[600px]">
-        <LayoutViewer />
+        {/* <LayoutViewer /> */}
       </div>
     </div>
   );

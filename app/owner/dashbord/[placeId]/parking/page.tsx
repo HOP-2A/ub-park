@@ -10,7 +10,7 @@ export default function OwnerParkingPage() {
     <div className="container  h-screen flex ">
       <ParkingSidebar placeId={placeId} />
       <div className="flex-1 bg-background border rounded-lg overflow-hidden relative">
-        <ParkingBuilder placeId={placeId} />
+        <ParkingBuilder placeId={placeId as string} />
       </div>
     </div>
   );
