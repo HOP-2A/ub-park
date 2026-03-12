@@ -27,9 +27,6 @@ export default function Home() {
     getbookings();
   }, [userId]);
 
-  console.log(userId);
-  console.log(myBookings);
-
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-3xl font-bold mb-6">My Bookings</h1>

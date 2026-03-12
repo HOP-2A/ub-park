@@ -14,8 +14,6 @@ export const ParkingSidebar = (placeId: any) => {
   const { user: clerkUser } = useUser();
   const router = useRouter();
 
-  console.log(placeId.placeId, "plce");
-
   const displayName =
     clerkUser?.fullName ||
     clerkUser?.username ||
@@ -48,7 +46,8 @@ export const ParkingSidebar = (placeId: any) => {
             <li
               onClick={() => {
                 router.push(`/owner/dashbord/${placeId.placeId}`);
-              }}>
+              }}
+            >
               <button className="flex items-center justify-between w-full px-4 py-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all duration-200 group">
                 <div className="flex items-center gap-3">
                   <Calendar className="w-5 h-5 group-hover:rotate-360 group-hover:scale-110 transition-transform duration-700" />
@@ -69,7 +68,8 @@ export const ParkingSidebar = (placeId: any) => {
             <li
               onClick={() => {
                 router.push(`/owner/dashbord/${placeId.placeId}/parking`);
-              }}>
+              }}
+            >
               <button className="flex items-center justify-between w-full text-white px-4 py-3 text-slate-600 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl hover:bg-slate-100 transition-all duration-200 group">
                 <div className="flex items-center gap-3">
                   <Settings className="w-5 h-5 group-hover:rotate-360 group-hover:scale-110 transition-transform duration-700" />
@@ -89,7 +89,8 @@ export const ParkingSidebar = (placeId: any) => {
             className="space-y-1"
             onClick={() => {
               router.push("/owner/dashbord");
-            }}>
+            }}
+          >
             <li>
               <button className="flex items-center justify-between w-full px-4 py-3 text-slate-600 rounded-xl hover:bg-slate-100 transition-all duration-200 group">
                 <div className="flex items-center gap-3">

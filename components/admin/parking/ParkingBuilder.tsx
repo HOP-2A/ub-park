@@ -32,8 +32,6 @@ export function ParkingBuilder({ placeId }: ParkingBuilderProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
 
-  console.log(activeId);
-
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor, {
