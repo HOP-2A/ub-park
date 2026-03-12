@@ -14,8 +14,6 @@ export const Sidebar = (placeId: any) => {
   const { user: clerkUser } = useUser();
   const router = useRouter();
 
-  console.log(placeId.placeId, "plce");
-
   const displayName =
     clerkUser?.fullName ||
     clerkUser?.username ||

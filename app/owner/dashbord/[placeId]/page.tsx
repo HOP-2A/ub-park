@@ -88,8 +88,6 @@ export default function Parking() {
     setB(data.message[0]);
   };
 
-  console.log(b, "boookkkk");
-
   useEffect(() => {
     const load = async () => {
       const loadedSlots = await getParkingLayout(`${placeId}`);
