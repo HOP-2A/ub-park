@@ -11,22 +11,22 @@ import {
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { useAuth } from "@/provider/authProvider";
+import dynamic from "next/dynamic";
+import React from "react";
 
-// ✅ Leaflet + react-leaflet
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
+type LatLng = { lat: number; lng: number };
 
-// ✅ Fix default marker icon paths in Next.js
-const DefaultIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
-L.Marker.prototype.options.icon = DefaultIcon;
+// ✅ Dynamically import the map so it's never rendered on the server
+const MapPicker = dynamic(() => import("./_mapPicker"), {
+  ssr: false,
+}) as React.ComponentType<{
+  picked: LatLng | null;
+  defaultCenter: LatLng;
+  onPick: (pos: LatLng) => void;
+  mapRef: React.RefObject<{
+    setView: (latlng: [number, number], zoom: number, opts?: object) => void;
+  } | null>;
+}>;
 
 export type User = {
   id: string;
@@ -34,17 +34,6 @@ export type User = {
   clerkId: string;
   email: string;
 };
-
-type LatLng = { lat: number; lng: number };
-
-function ClickToPick({ onPick }: { onPick: (pos: LatLng) => void }) {
-  useMapEvents({
-    click(e) {
-      onPick({ lat: e.latlng.lat, lng: e.latlng.lng });
-    },
-  });
-  return null;
-}
 
 export default function AddParkingLot() {
   const [focusedField, setFocusedField] = useState("");
@@ -68,7 +57,9 @@ export default function AddParkingLot() {
   const [picked, setPicked] = useState<LatLng | null>(null);
 
   // keep map instance (optional)
-  const mapRef = useRef<L.Map | null>(null);
+  const mapRef = useRef<{
+    setView: (latlng: [number, number], zoom: number, opts?: object) => void;
+  } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -297,25 +288,12 @@ export default function AddParkingLot() {
                   </div>
 
                   <div className="h-[320px]">
-                    <MapContainer
-                      center={picked ?? defaultCenter}
-                      zoom={13}
-                      scrollWheelZoom
-                      className="h-full w-full"
-                      ref={mapRef} // <-- assign the map ref directly
-                      whenReady={() => {
-                        console.log("Map is ready", mapRef.current);
-                      }}
-                    >
-                      <TileLayer
-                        attribution="&copy; OpenStreetMap contributors"
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      />
-
-                      <ClickToPick onPick={handlePickOnMap} />
-
-                      {picked && <Marker position={[picked.lat, picked.lng]} />}
-                    </MapContainer>
+                    <MapPicker
+                      picked={picked}
+                      defaultCenter={defaultCenter}
+                      onPick={handlePickOnMap}
+                      mapRef={mapRef}
+                    />
                   </div>
                 </div>
               </div>

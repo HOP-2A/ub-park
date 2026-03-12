@@ -11,16 +11,7 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Default Leaflet marker icons fix
-const DefaultIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
-L.Marker.prototype.options.icon = DefaultIcon;
+// Default Leaflet marker icons fix — must be inside component (not module scope) to avoid SSR `window` error
 
 // LatLng type
 export type LatLng = { lat: number; lng: number };
@@ -39,6 +30,16 @@ export default function LeafletMap({
   onPick,
   mapRef,
 }: LeafletMapProps) {
+  // Created here (not at module scope) so Leaflet never touches `window` during SSR
+  const DefaultIcon = L.icon({
+    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+    iconRetinaUrl:
+      "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+  });
+  L.Marker.prototype.options.icon = DefaultIcon;
   // Click to pick coordinates
   function ClickToPick() {
     useMapEvents({
