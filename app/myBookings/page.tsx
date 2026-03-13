@@ -79,8 +79,7 @@ export default function Home() {
             <li onClick={() => router.push(`/`)}>
               <a
                 href="#"
-                className="flex items-center gap-3 px-4 py-3  text-black bg-gradient-to-r  rounded-2xl shadow-md shadow-blue-200"
-              >
+                className="flex items-center gap-3 px-4 py-3  text-black bg-gradient-to-r  rounded-2xl shadow-md shadow-blue-200">
                 <House className="w-5 h-5" />
                 <span className="font-semibold">Home</span>
               </a>
@@ -88,8 +87,7 @@ export default function Home() {
             <li onClick={() => router.push(`/myBookings`)}>
               <a
                 href="#"
-                className="flex items-center gap-3 px-4 py-3 text-white bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600  rounded-2xl shadow-md "
-              >
+                className="flex items-center gap-3 px-4 py-3 text-white bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600  rounded-2xl shadow-md ">
                 <BookMarked className="w-5 h-5" />
                 <span className="font-semibold">My Bookings</span>
               </a>
@@ -160,8 +158,7 @@ export default function Home() {
             return (
               <div
                 key={booking.id}
-                className="rounded-2xl border border-blue-300 bg-gradient-to-b from-blue-400 to-blue-700 cursor-pointer overflow-hidden"
-              >
+                className="rounded-2xl border border-blue-300  bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600  cursor-pointer overflow-hidden">
                 <div className="flex items-center gap-4 px-5 py-4">
                   {/* Icon */}
                   <div className="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0 bg-blue-500">

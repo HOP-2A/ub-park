@@ -112,8 +112,7 @@ export default function Home() {
               <li>
                 <a
                   href="#"
-                  className="flex items-center gap-3 px-4 py-3 text-white bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600 rounded-2xl shadow-md shadow-blue-200"
-                >
+                  className="flex items-center gap-3 px-4 py-3 text-white bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600 rounded-2xl shadow-md shadow-blue-200">
                   <House className="w-5 h-5" />
                   <span className="font-semibold">Home</span>
                 </a>
@@ -121,13 +120,11 @@ export default function Home() {
               <li>
                 <a
                   href="#"
-                  className="flex items-center gap-3 px-4 py-3 text-black bg-gradient-to-r  rounded-2xl shadow-md "
-                >
+                  className="flex items-center gap-3 px-4 py-3 text-black bg-gradient-to-r  rounded-2xl shadow-md ">
                   <BookMarked className="w-5 h-5" />
                   <span
                     className="font-semibold"
-                    onClick={() => router.push(`/myBookings`)}
-                  >
+                    onClick={() => router.push(`/myBookings`)}>
                     My Bookings
                   </span>
                 </a>
@@ -210,74 +207,74 @@ export default function Home() {
           ) : places.length === 0 ? (
             <EmptyState onRefresh={() => window.location.reload()} />
           ) : (
-            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {places.map((place) => (
-                <Card
-                  key={place.id}
-                  onClick={() => router.push(`/${place.id}`)}
-                  className="cursor-pointer bg-white rounded-3xl shadow-xl border border-slate-200 transition-all duration-300 hover:shadow-2xl  overflow-hidden"
-                >
-                  <CardFooter className="p-0">
-                    {/* top accent */}
-                    <div className="h-2 w-full bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600" />
-                  </CardFooter>
+            <div className="max-h-[calc(100vh-120px)] overflow-y-auto pr-2">
+              <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                {places.map((place) => (
+                  <Card
+                    key={place.id}
+                    onClick={() => router.push(`/${place.id}`)}
+                    className="cursor-pointer bg-white rounded-3xl shadow-xl border border-slate-200 transition-all duration-300 hover:shadow-2xl  overflow-hidden">
+                    <CardFooter className="p-0">
+                      {/* top accent */}
+                      <div className="h-2 w-full bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600" />
+                    </CardFooter>
 
-                  <CardHeader className="space-y-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <CardTitle className="text-xl font-bold text-slate-900 truncate">
-                          {place.name}
-                        </CardTitle>
-                        <div className="mt-1 text-sm text-slate-500 truncate">
-                          {place.city}
+                    <CardHeader className="space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <CardTitle className="text-xl font-bold text-slate-900 truncate">
+                            {place.name}
+                          </CardTitle>
+                          <div className="mt-1 text-sm text-slate-500 truncate">
+                            {place.city}
+                          </div>
+                        </div>
+
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-500 flex items-center justify-center shadow-lg shadow-blue-200 shrink-0">
+                          <ParkingCircle className="w-6 h-6 text-white" />
+                        </div>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="text-sm text-slate-700 space-y-3">
+                      <div className="rounded-2xl border border-slate-200 bg-blue-50 p-4">
+                        <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
+                          Address
+                        </div>
+                        <div className="mt-1 font-semibold text-slate-900 line-clamp-2">
+                          {place.address}
                         </div>
                       </div>
 
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-500 flex items-center justify-center shadow-lg shadow-blue-200 shrink-0">
-                        <ParkingCircle className="w-6 h-6 text-white" />
+                      <div className="grid grid-cols-2 gap-3">
+                        <MiniStat
+                          label="Parking lots"
+                          value={String(place.parkings.length)}
+                        />
+                        <MiniStat label="City" value={place.city || "—"} />
                       </div>
-                    </div>
-                  </CardHeader>
+                    </CardContent>
 
-                  <CardContent className="text-sm text-slate-700 space-y-3">
-                    <div className="rounded-2xl border border-slate-200 bg-blue-50 p-4">
-                      <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider">
-                        Address
-                      </div>
-                      <div className="mt-1 font-semibold text-slate-900 line-clamp-2">
-                        {place.address}
-                      </div>
-                    </div>
+                    <CardAction className="px-6 pb-6">
+                      <button
+                        type="button"
+                        className="relative w-full group overflow-hidden"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/${place.id}`);
+                        }}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600 rounded-2xl transition-all duration-500 group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-sky-300 to-blue-400 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <MiniStat
-                        label="Parking lots"
-                        value={String(place.parkings.length)}
-                      />
-                      <MiniStat label="City" value={place.city || "—"} />
-                    </div>
-                  </CardContent>
-
-                  <CardAction className="px-6 pb-6">
-                    <button
-                      type="button"
-                      className="relative w-full group overflow-hidden"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        router.push(`/${place.id}`);
-                      }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600 rounded-2xl transition-all duration-500 group-hover:scale-105" />
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-sky-300 to-blue-400 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
-
-                      <div className="relative px-6 py-4 flex items-center justify-center gap-3 text-white font-bold text-base">
-                        <span>PARK HERE</span>
-                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                      </div>
-                    </button>
-                  </CardAction>
-                </Card>
-              ))}
+                        <div className="relative px-6 py-4 flex items-center justify-center gap-3 text-white font-bold text-base">
+                          <span>PARK HERE</span>
+                          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                        </div>
+                      </button>
+                    </CardAction>
+                  </Card>
+                ))}
+              </div>
             </div>
           )}
 
@@ -337,8 +334,7 @@ function PlacesGridSkeleton() {
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="relative bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden"
-        >
+          className="relative bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
           <div className="h-2 w-full bg-slate-100 animate-pulse" />
           <div className="p-6">
             <div className="flex items-start justify-between gap-3">
@@ -381,8 +377,7 @@ function EmptyState({ onRefresh }: { onRefresh: () => void }) {
       <div className="mt-6 flex justify-center">
         <Button
           onClick={onRefresh}
-          className="rounded-2xl bg-blue-700 hover:bg-blue-800"
-        >
+          className="rounded-2xl bg-blue-700 hover:bg-blue-800">
           Refresh
         </Button>
       </div>
