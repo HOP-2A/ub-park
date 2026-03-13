@@ -104,28 +104,28 @@ export default function Parking() {
       value: `${parkingSpots.length}`,
       icon: Car,
       color: "blue",
-      trend: "+12%",
+      trend: "%",
     },
     {
       label: "Available",
-      value: "87",
+      value: `${parkingSpots.length}`,
       icon: MapPin,
-      color: "red",
-      trend: "+5%",
+      color: "blue",
+      trend: "%",
     },
     {
       label: "Revenue",
-      value: "$24,700",
+      value: "0$",
       icon: DollarSign,
       color: "blue",
-      trend: "+18%",
+      trend: "%",
     },
     {
       label: "Occupancy",
-      value: "65%",
+      value: "0%",
       icon: TrendingUp,
-      color: "red",
-      trend: "+8%",
+      color: "blue",
+      trend: "1%",
     },
   ];
 
@@ -156,12 +156,10 @@ export default function Parking() {
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-white/80 backdrop-blur-xl rounded-2xl p-5 border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
-              >
+                className="bg-white/80 backdrop-blur-xl rounded-2xl p-5 border border-slate-200/60 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer">
                 <div className="flex items-start justify-between mb-3">
                   <div
-                    className={`w-12 h-12 bg-gradient-to-br from-${stat.color}-500 to-${stat.color}-600 rounded-xl flex items-center justify-center shadow-lg shadow-${stat.color}-500/30 group-hover:scale-110 transition-transform duration-300`}
-                  >
+                    className={`w-12 h-12 bg-gradient-to-br from-${stat.color}-500 to-${stat.color}-600 rounded-xl flex items-center justify-center shadow-lg shadow-${stat.color}-500/30 group-hover:scale-110 transition-transform duration-300`}>
                     <stat.icon className="w-6 h-6 text-white" />
                   </div>
                   <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-lg">
@@ -189,8 +187,7 @@ export default function Parking() {
                   selectedDate === item.day
                     ? "border-blue-600 bg-blue-50"
                     : "border-gray-200 bg-white hover:border-gray-300"
-                }`}
-              >
+                }`}>
                 <span className="text-xs text-gray-500 font-medium mb-1">
                   {item.weekday}
                 </span>
@@ -199,8 +196,7 @@ export default function Parking() {
                     selectedDate === item.day
                       ? "text-blue-600"
                       : "text-gray-900"
-                  }`}
-                >
+                  }`}>
                   {item.day}
                 </span>
                 <span className="text-xs text-gray-400">{item.month}</span>
@@ -208,7 +204,7 @@ export default function Parking() {
             ))}
           </div>
           {/* Map placeholder with enhanced design */}
-          <div className="relative bg-black rounded-3xl h-96 mb-8 flex items-center justify-center overflow-hidden shadow-2xl border-2 border-blue-500">
+          <div className="relative bg-grey rounded-3xl h-130 mb-8 flex items-center justify-center overflow-hidden shadow-2xl border-2 border-black-200">
             {/* Simple blue accent in corner */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 opacity-5 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600 opacity-5 rounded-full blur-3xl"></div>
@@ -219,10 +215,9 @@ export default function Parking() {
                 className="w-full h-full"
                 style={{
                   backgroundImage:
-                    "linear-gradient(rgb(59,130,246) 1px, transparent 1px), linear-gradient(90deg, rgb(59,130,246) 1px, transparent 1px)",
-                  backgroundSize: "40px 40px",
-                }}
-              ></div>
+                    "linear-gradient(rgb(13, 13, 13) 1px, transparent 1px), linear-gradient(90deg, rgb(12, 13, 13) 1px, transparent 1px)",
+                  // backgroundSize: "40px 40px",
+                }}></div>
             </div>
 
             <ParkingCanvas
@@ -253,8 +248,7 @@ export default function Parking() {
                   className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 hover:shadow-xl transition-all duration-300 group"
                   onClick={() => {
                     getBookings(spot.id);
-                  }}
-                >
+                  }}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-6 flex-1">
                       {/* Spot ID */}

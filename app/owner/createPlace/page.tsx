@@ -13,6 +13,8 @@ import { useUser } from "@clerk/nextjs";
 import { useAuth } from "@/provider/authProvider";
 import dynamic from "next/dynamic";
 import React from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type LatLng = { lat: number; lng: number };
 
@@ -48,6 +50,7 @@ export default function AddParkingLot() {
     slotCount: 10,
     pricePerHour: 5,
   });
+  const router = useRouter();
 
   // ✅ Map state (default: Ulaanbaatar-ish center; change if you want)
   const defaultCenter = useMemo<LatLng>(
@@ -138,11 +141,15 @@ export default function AddParkingLot() {
     });
 
     if (!res.ok) {
-      alert("Failed to create parking lot");
+      // alert("Failed to create parking lot");
+      toast.error("Failed to create parking lot");
       return;
+    } else {
+      toast.success("Parking lot created 🚗");
+      router.push("/owner/dashbord");
     }
 
-    alert("Parking lot created 🚗");
+    // alert("Parking lot created 🚗");
   };
 
   // ✅ UI classes
@@ -281,8 +288,7 @@ export default function AddParkingLot() {
                         setPicked(null);
                         setForm((p) => ({ ...p, latitude: "", longitude: "" }));
                       }}
-                      className="text-blue-700 hover:text-blue-800 font-semibold"
-                    >
+                      className="text-blue-700 hover:text-blue-800 font-semibold">
                       Clear pin
                     </button>
                   </div>
@@ -398,8 +404,7 @@ export default function AddParkingLot() {
               <div className="pt-6">
                 <button
                   type="submit"
-                  className="relative w-full group overflow-hidden"
-                >
+                  className="relative w-full group overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-sky-500 to-blue-600 rounded-2xl transition-all duration-500 group-hover:scale-105"></div>
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-sky-300 to-blue-400 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500"></div>
 
@@ -469,8 +474,7 @@ export default function AddParkingLot() {
                         animate: true,
                       });
                     }}
-                    className="mt-3 inline-flex items-center gap-2 text-blue-700 hover:text-blue-800 font-semibold text-sm"
-                  >
+                    className="mt-3 inline-flex items-center gap-2 text-blue-700 hover:text-blue-800 font-semibold text-sm">
                     <Navigation className="w-4 h-4" />
                     Zoom to pin
                   </button>
